@@ -43,7 +43,7 @@ if ($part == 1) {
 	# count length of array
 	foreach my $file (@files) {
 		# make a log file, have run_pipeline.pl print out once each run is complete, dont move on to part 2 until the log has as many elements as the array
-		`qsub -V -S /usr/bin/perl run_pipeline.pl -i $file -o $output -g $genomeType -p $part -r $runID`;
+		`qsub -pe parallel 8 -V -S /usr/bin/perl run_pipeline.pl -i $file -o $output -g $genomeType -p $part -r $runID`;
 	}
 }
 elsif ($part == 2){
@@ -55,7 +55,7 @@ elsif ($part == 2){
 	# cq
 	my @files = glob("$output/th-out/th-out_*_$runID");
 	foreach my $file (@files) {
-		`qsub -V -S /usr/bin/perl run_pipeline.pl -i $file -o $output -g $genomeType -p $part -r $runID`;
+		`qsub -pe parallel 8 -V -S /usr/bin/perl run_pipeline.pl -i $file -o $output -g $genomeType -p $part -r $runID`;
 	}
 }
 elsif ($part == 3){
@@ -64,12 +64,12 @@ elsif ($part == 3){
 
 	#qsub here a run_pipeline.pl call with appropriate parameters
 		## what is input? output should be same
-	`qsub -V -S /usr/bin/perl run_pipeline.pl -i $input -o $output -g $genomeType -p $part -r $runID`;
+	`qsub -pe parallel 8 -V -S /usr/bin/perl run_pipeline.pl -i $input -o $output -g $genomeType -p $part -r $runID`;
 }
 
 # cuffdiff, to be run after all other processes
 # user should input which directory is input, say it should be selected directory with the cq-out directories from the program
 if ($cd){
-	`qsub -V -S /usr/bin/perl run_pipeline.pl -i $input -o $output -g $genomeType -r $runID --cd`;
+	`qsub -pe parallel 8 -V -S /usr/bin/perl run_pipeline.pl -i $input -o $output -g $genomeType -r $runID --cd`;
 }
 
