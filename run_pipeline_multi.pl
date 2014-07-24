@@ -40,7 +40,7 @@ $output = $output . "/" if (substr($output, -1, 1) ne "/");
 if ($part == 1) {
 	# Run all fq.gz files in directory "../fq/" through part 1 of run_pipeline.pl
 	my @files = glob("$input/*.fq.gz");
-	# count length of array
+	# count length of array, use that to determine how to split qsub
 	foreach my $file (@files) {
 		# make a log file, have run_pipeline.pl print out once each run is complete, dont move on to part 2 until the log has as many elements as the array
 		`qsub -pe parallel 8 -V -S /usr/bin/perl run_pipeline.pl -i $file -o $output -g $genomeType -p $part -r $runID`;
