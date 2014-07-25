@@ -282,11 +282,10 @@ sub run_cuffnorm() {
 	@time=localtime(time);
 	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," Running Cuffnorm: $newFilename\n";
 
-	`cuffnorm -p 8 -o $newFilename -L $labels $merged $abundances`;
+	`cuffnorm -p 8 --output-format cuffdiff -o $newFilename -L $labels $merged $abundances`;
 
 	@time=localtime(time);
 	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," Cuffnorm complete: $newFilename\n";
-	#cuffnorm -p8 -o /mnt/speed/kanagarajM/ -L test,test1 /mnt/speed/kanagarajM/pipeline/cm-out/cm-out_6222014/merged.gtf /mnt/speed/kanagarajM/pipeline/cq-out/cq-out_HSB130.MD.fq_6212014/abundances.cxb /mnt/speed/kanagarajM/pipeline/cq-out/cq-out_HSB155.AMY.fq_6212014/abundances.cxb
 	
 }
 
@@ -327,8 +326,6 @@ sub run_cuffdiff(){
 
 	@time=localtime(time);
 	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," Cuffdiff complete: $newFilename\n";
-	#`cuffnorm -p 8 -o $newFilename -L $labels $merged $abundances`;
-	#cuffnorm -p8 -o /mnt/speed/kanagarajM/ -L test,test1 /mnt/speed/kanagarajM/pipeline/cm-out/cm-out_6222014/merged.gtf /mnt/speed/kanagarajM/pipeline/cq-out/cq-out_HSB130.MD.fq_6212014/abundances.cxb /mnt/speed/kanagarajM/pipeline/cq-out/cq-out_HSB155.AMY.fq_6212014/abundances.cxb
 	
 }
 
