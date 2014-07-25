@@ -9,6 +9,9 @@ use Getopt::Long;
 # perl pipeline.pl -i /home/kanagarajm/fq_batch/ -o /mnt/speed/kanagarajM/pipeline_batch/ -g u -p 1 -r 72414
 # perl pipeline.pl -i /home/kanagarajm/fq_batch/ -o /mnt/speed/kanagarajM/pipeline_batch/ -g u -p 2 -r 72414
 # perl pipeline.pl -i /home/kanagarajm/fq_batch/ -o /mnt/speed/kanagarajM/pipeline_batch/ -g u -p 3 -r 72414
+# perl pipeline.pl -i /home/kanagarajm/fq_batch/ -o /mnt/speed/kanagarajM/pipeline_batch/ -g u --cd -r 72414
+# perl pipeline.pl -i /mnt/speed/kanagarajM/pipeline_batch/cq-out/ -o /mnt/speed/kanagarajM/pipeline_batch/ -g u --cd -r 72414
+	### by having a different input, cuffdiff allows for greater specificity as to which samples are to be used
 
 
 my ( $input, $output, $genomeType, $part, $cd, $runID, $t, $tc );
