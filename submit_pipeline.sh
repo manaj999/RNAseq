@@ -6,11 +6,11 @@
 #$ -cwd
 #$ -V
 #$ -pe parallel 8
-#$ -t 1-16
-#$ -tc 16
-SAMPLE_DIR=/home/kanagarajm/fq_batch/;
-SAMPLE_LIST=($SAMPLE_DIR/*.fq.gz);
+
+SAMPLE_DIR=$ARG1;
+#SAMPLE_DIR=/home/kanagarajm/fq_batch/;
+SAMPLE_LIST=($SAMPLE_DIR/$ARG6);
 INDEX=$((SGE_TASK_ID-1));
 INPUT_FILE=${SAMPLE_LIST[$INDEX]};
 #echo $INPUT_FILE;
-perl run_pipeline_batch.pl -i $INPUT_FILE -o /mnt/speed/kanagarajM/pipeline_batch/ -g u -p 1 -r 72414
+perl run_pipeline.pl -i $INPUT_FILE -o $ARG2 -g $ARG3 -p $ARG4 -r $ARG5

@@ -5,9 +5,13 @@ use Getopt::Long;
 
 # See run_pipeline.pl for more detailed documentation
 
+## Three commands for entire pipeline:
+# perl pipeline.pl -i /home/kanagarajm/fq_batch/ -o /mnt/speed/kanagarajM/pipeline_batch/ -g u -p 1 -r 72414
+# perl pipeline.pl -i /home/kanagarajm/fq_batch/ -o /mnt/speed/kanagarajM/pipeline_batch/ -g u -p 2 -r 72414
+# perl pipeline.pl -i /home/kanagarajm/fq_batch/ -o /mnt/speed/kanagarajM/pipeline_batch/ -g u -p 3 -r 72414
 
 
-my ( $input, $output, $genomeType, $part, $cd, $runID );
+my ( $input, $output, $genomeType, $part, $cd, $runID, $t, $tc );
 $part = 0;
 
 GetOptions(	
@@ -28,15 +32,29 @@ $output = $output . "/" if (substr($output, -1, 1) ne "/");
 
 #overwrite log file out here
 
+# prep t flag here
+
 
 ### MAIN ###
 if ($part == 1) {
-	`qsub submit_pipeline_1.sh`;
+	my $suffix = "*.fq.gz";
+	my @size = glob("$input/$suffix");
+	$tc = scalar(@size);
+	$t = "1-".$tc;
+	if ($tc > 100) { $tc = 75; }
+
+	`qsub -t $t -tc $tc -v ARG1=$input,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix submit_pipeline.sh`;
 }
 elsif ($part == 2){
 	`perl run_pipeline.pl -i $input -o $output -g $genomeType -p $part -r $runID --cm`;
 
-	`qsub submit_pipeline_2.sh`;
+	my $suffix = "th-out/th-out_*_$runID";
+	my @size = glob("$output/$suffix");
+	$tc = scalar(@size);
+	$t = "1-".$tc;
+	if ($tc > 100) { $tc = 75; }
+
+	`qsub -t $t -tc $tc -v ARG1=$output,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix submit_pipeline.sh`;
 }
 elsif ($part == 3){
 	`qsub -pe parallel 8 -V -S /usr/bin/perl run_pipeline.pl -i $input -o $output -g $genomeType -p $part -r $runID`;
