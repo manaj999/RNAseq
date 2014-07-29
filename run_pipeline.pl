@@ -9,13 +9,13 @@ use Getopt::Long;
 	### The separation of Part 1 and Part 2 is necessary because cuffmerge cannot assemble 
 	### a merged transcriptome assembly until all samples have been processed through cufflinks.
 	### The merged.gtf file is neeeded to run cuffquant and cuffnorm.
-## Part 3 collects all files processed through Part 2 and runs them through cuffnorm individually.
+## Part 3 collects all files processed through Part 2 and runs them through cuffnorm together.
 ## The fourth component (CD) is optional. It collects all files processed through Part 2 and runs them through cuffdiff.
 	### The separation of Part 2 and Parts 3 and CD is necessary because both cuffnorm and cuffdiff 
 	### can only be run once all samples have been processed through cuffquant
 
 # EXAMPLE COMMAND LINE CALLS:
-## /usr/bin/perl run_pipeline.pl -i /home/kanagarajm/HSB103.A1C.fq -o /mnt/speed/kanagarajM/pipeline/ -g u -p 1
+## perl run_pipeline.pl -i /home/kanagarajm/HSB103.A1C.fq -o /mnt/speed/kanagarajM/pipeline/ -g u -p 1
 
 
 
