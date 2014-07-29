@@ -40,8 +40,12 @@ sub run_cuffdiff();
 	### 1 for part 1 | 2 for part 2
 ## $genome, $genes, $merged variables store the path of files for easier access later in the script
 ## $log represents the output log file, while $cm and $cd are flags for cuffmerge and cuffdiff, respectively
+## $runID is a unique integer ID for organizing and specifying samples to be processed. 
+	### Allows user to use same output directory for all jobs.
 
 my ( $input, $output, $genomeType, $part, $genome, $genes, $merged, $log, $cm, $cd, $runID );
+
+# Set defaults
 $genomeType = "u";
 $part = 0;
 
@@ -55,6 +59,7 @@ GetOptions(
 	'r=i' => \$runID
 ) or die "Incorrect input and/or output path!\n";
 
+# Set variable paths
 if ($genomeType eq "u") {
 	$genes = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf";
 	$genome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/UCSC/hg19/Sequence/WholeGenomeFasta/genome.fa";
@@ -67,7 +72,6 @@ elsif ($genomeType eq "n") {
 	$genes = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/NCBI/build37.2/Annotation/Genes/genes.gtf";
 	$genome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/NCBI/build37.2/Sequence/WholeGenomeFasta/genome.fa";
 }
-
 
 # FORMAT INPUT/OUTPUT
 ## The following string modifications are meant to ensure that the component subroutines
@@ -119,7 +123,7 @@ if ($part == 1) {
 } elsif ($part == 2) {
 	
 	# RUN CUFFMERGE SUBROUTINE
-	## Run cuffmerge only once based on command in run_pipeline_multi.pl
+	## Run cuffmerge only once based on command in pipeline.pl
 	if ($cm) { 
 		
 		run_cuffmerge();
@@ -251,10 +255,10 @@ sub run_cuffquant() {
 }
 
 sub run_cuffnorm() {
-	#input should be cq-out directories or just plain?
-	# grabbing merged for any date, so make sure only one merged is in the directory
+	# Access merged transcriptome for use in cuffnorm
 	$merged = $cm_output . "cm-out_$runID/merged.gtf";
 
+	# Concatenate all 'abundances.cxb' files and sample names to be used in a single cuffnorm call.
 	my $abundances = '';
 	my $labels = '';
 
@@ -269,8 +273,7 @@ sub run_cuffnorm() {
 		#$label =~ s#\.fq.*##;
 		$label =~ s#_.*##;
 		
-		
-		# make a string in here that concatenates labels and concatenates .cxb files, then subst those into a cuffnorm call afterwards !
+		# Concatenate labels and 'abundances.cxb' filenames
 		$labels = $labels . "$label,";
 		$abundances = $abundances . "$file ";
 	}
@@ -290,11 +293,10 @@ sub run_cuffnorm() {
 }
 
 sub run_cuffdiff(){
-
-	# grabbing merged for any date, so make sure only one merged is in the directory
-	# this time stamp will undoubtedly be a problem if you run cuffdiff on a different day
+	# Access merged transcriptome for use in cuffnorm
 	$merged = $cm_output . "cm-out_$runID/merged.gtf";
 
+	# Concatenate all 'abundances.cxb' files and sample names to be used in a single cuffdiff call.
 	my $abundances = '';
 	my $labels = '';
 
@@ -310,7 +312,7 @@ sub run_cuffdiff(){
 		$label =~ s#_.*##;
 		
 		
-		# make a string in here that concatenates labels and concatenates .cxb files, then subst those into a cuffnorm call afterwards !
+		# Concatenate labels and 'abundances.cxb' filenames
 		$labels = $labels . "$label,";
 		$abundances = $abundances . "$file ";
 	}
