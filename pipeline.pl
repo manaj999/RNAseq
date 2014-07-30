@@ -50,7 +50,7 @@ if ($part == 1) {
 	my @size = glob("$input/$suffix");
 	$tc = scalar(@size);
 	$t = "1-".$tc;
-	if ($tc > 100) { $tc = 100; }
+	if ($tc > 100) { $tc = 75; }
 
 	`qsub -t $t -tc $tc -v ARG1=$input,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix submit_pipeline.sh`;
 }

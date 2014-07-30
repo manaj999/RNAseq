@@ -25,6 +25,7 @@ sub run_cufflinks();
 sub run_cuffmerge();
 sub run_cuffquant();
 sub run_cuffnorm();
+sub run_cummeRbund();
 sub run_cuffdiff();
 
 
@@ -78,7 +79,7 @@ elsif ($genomeType eq "n") {
 	## can communicate with each other by avoiding potential syntax errors from the user
 ## Additionally, this script will create directories to organize the output from each
 	## individual component if they have not already been created
-my ( $th_output, $cl_output, $cm_output, $cq_output, $cn_output, $cd_output );
+my ( $th_output, $cl_output, $cm_output, $cq_output, $cn_output, $cd_output, $cb_output );
 
 $th_output = $output."th-out/";
 $cl_output = $output."cl-out/";
@@ -86,6 +87,7 @@ $cm_output = $output."cm-out/";
 $cq_output = $output."cq-out/";
 $cn_output = $output."cn-out/";
 $cd_output = $output."cd-out/";
+$cb_output = $output."cb-out/";
 
 unless (-e $th_output) { unless (mkdir $th_output) { die "Unable to create $th_output\n"; } }
 unless (-e $cl_output) { unless (mkdir $cl_output) { die "Unable to create $cl_output\n"; } }
@@ -93,6 +95,7 @@ unless (-e $cm_output) { unless (mkdir $cm_output) { die "Unable to create $cm_o
 unless (-e $cq_output) { unless (mkdir $cq_output) { die "Unable to create $cq_output\n"; } }
 unless (-e $cn_output) { unless (mkdir $cn_output) { die "Unable to create $cn_output\n"; } }
 unless (-e $cd_output) { unless (mkdir $cd_output) { die "Unable to create $cd_output\n"; } }
+unless (-e $cb_output) { unless (mkdir $cb_output) { die "Unable to create $cb_output\n"; } }
 
 # DECLARE FILE VARIABLE
 ## The $file variable is used to specify the file that is to be run by 
@@ -141,6 +144,10 @@ if ($part == 1) {
 		
 	run_cuffnorm();
 
+
+
+	# run cummeRbund here
+	run_cummeRbund();
 }
 
 
@@ -290,6 +297,18 @@ sub run_cuffnorm() {
 	@time=localtime(time);
 	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," Cuffnorm complete: $newFilename\n";
 	
+}
+
+sub run_cummeRbund(){
+
+	# can make them pipe to new directory just for those runs if you really care to
+	@time=localtime(time);
+	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," Generating cummeRbund summary graphs: $cd_output\n";
+
+	`Rscript cummeRpipe.r $input $output $runID`;
+
+	@time=localtime(time);
+	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," CummeRbund summary graphs are ready: $cd_output\n";
 }
 
 sub run_cuffdiff(){
