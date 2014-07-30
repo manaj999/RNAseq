@@ -23,7 +23,7 @@ use Getopt::Long;
 	### perl pipeline.pl -i /mnt/speed/kanagarajM/pipeline_batch/cq-out/ -o /mnt/speed/kanagarajM/pipeline_batch/ -g u --cd -r 72414
 
 
-my ( $input, $output, $genomeType, $part, $cd, $runID, $t, $tc );
+my ( $input, $output, $genomeType, $part, $cd, $runID, $t, $tc, $assembly, $index, $genes, $transcriptome, $log );
 $part = 0;
 
 GetOptions(	
@@ -41,6 +41,41 @@ die "Invalid genome type\n" unless ($genomeType =~ /^[uen]$/i);
 
 $input =~ s/.$// if (substr($input, -1, 1) eq "/");
 $output = $output . "/" if (substr($output, -1, 1) ne "/"); 
+
+$log = ">>" . $output . "log_$runID.txt";
+open(LOG, $log) or die "Can't open log";
+my @time=localtime(time);
+
+### BUILD TRANSCRIPTOME ###
+if ($genomeType eq "u") {
+	$assembly = "UCSC/hg19";
+}
+elsif ($genomeType eq "e") {
+	$assembly = "Ensembl/GRCh37";
+}
+elsif ($genomeType eq "n") {
+	$assembly = "NCBI/build37.2";
+}
+
+$index = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Index/known";
+unless (-e "$index.gff") {
+	$genes = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Annotation/Genes/genes.gtf";
+	$transcriptome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Sequence/Bowtie2Index/genome";
+
+	@time=localtime(time);
+	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," Building transcriptome...\n";
+
+	`tophat -p 8 -G $genes --transcriptome-index=$index $transcriptome`;
+
+	@time=localtime(time);
+	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," Finished building transcriptome.\n";
+}
+
+close(LOG);
+
+
+
+
 
 ### MAIN ###
 if ($part == 1) {

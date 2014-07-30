@@ -44,7 +44,7 @@ sub run_cuffdiff();
 ## $runID is a unique integer ID for organizing and specifying samples to be processed. 
 	### Allows user to use same output directory for all jobs.
 
-my ( $input, $output, $genomeType, $part, $genome, $genes, $merged, $log, $cm, $cd, $runID );
+my ( $input, $output, $genomeType, $part, $genome, $genes, $merged, $log, $cm, $cd, $runID, $assembly, $index, $transcriptome );
 
 # Set defaults
 $genomeType = "u";
@@ -62,17 +62,19 @@ GetOptions(
 
 # Set variable paths
 if ($genomeType eq "u") {
-	$genes = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf";
-	$genome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/UCSC/hg19/Sequence/WholeGenomeFasta/genome.fa";
+	$assembly = "UCSC/hg19";
 }
 elsif ($genomeType eq "e") {
-	$genes = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/Ensembl/GRCh37/Annotation/Genes/genes.gtf";
-	$genome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/Ensembl/GRCh37/Sequence/WholeGenomeFasta/genome.fa";
+	$assembly = "Ensembl/GRCh37";
 }
 elsif ($genomeType eq "n") {
-	$genes = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/NCBI/build37.2/Annotation/Genes/genes.gtf";
-	$genome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/NCBI/build37.2/Sequence/WholeGenomeFasta/genome.fa";
+	$assembly = "NCBI/build37.2";
 }
+$genes = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Annotation/Genes/genes.gtf";
+$genome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Sequence/WholeGenomeFasta/genome.fa";
+$index = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Index/known";
+$transcriptome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Sequence/Bowtie2Index/genome";
+
 
 # FORMAT INPUT/OUTPUT
 ## The following string modifications are meant to ensure that the component subroutines
@@ -181,7 +183,7 @@ sub run_tophat() {
 	$newFilename = $th_output . "th-out_" . $newFilename . "_$runID";
 
 	# Run tophat
-	`tophat -r 50 -p 8 -o $newFilename --library-type fr-unstranded --solexa1.3-quals --transcriptome-index=/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/UCSC/hg19/Index/known /mnt/state_lab/reference/transcriptomeData/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index/genome $file`;
+	`tophat -r 50 -p 8 -o $newFilename --library-type fr-unstranded --solexa1.3-quals --transcriptome-index=$index $transcriptome $file`;
 	
 	@time=localtime(time);
 	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," TopHat complete: $newFilename.\n";
