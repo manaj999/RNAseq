@@ -3,15 +3,16 @@ use strict;
 use warnings;
 use Getopt::Long;
 
-# perl pipeline.pl -i <INPUT> -o <OUTPUT> -g <GENOME> -p <PART> -r <RUNID>
+# perl pipeline.pl -i <INPUT> -o <OUTPUT> -g <GENOME> -p <PART> -r <RUNID> <OPTIONS>
 ## ARGUMENTS:
 	### -i : input ... Directory containing all fastq files to be run through pipeline
 	### -o : output ... Directory where all output files will be organized and saved
-	### -g : genome build ... Genome build to be used. "u" for UCSC, "e" for Ensembl, "n" for NCBI
+	### -g : genome build ... Genome build to be used. "u" for UCSC, "e" for Ensembl, "n" for NCBI. If using --altAnnotation, then specify PATH
 	### -p : part ... part of the pipeline to be completed. 1 => Tophat and Cufflinks, 2 => Cuffmerge and Cuffquant, 3 => Cuffnorm
 	### -r : runID ... unique runID used to identify and organize outputs from a given run
 	### --cd: cuffdiff (see below)
 	### --nocuffmerge: use to skip running cuffmerge
+	### --altAnnotation: use a different genome assembly. Specify directory where "Sequence" and "Annotation" folders are located in -g option.
 
 # Three commands for entire pipeline:
 ## Part 1:
@@ -25,7 +26,7 @@ use Getopt::Long;
 	### perl pipeline.pl -i /mnt/speed/kanagarajM/pipeline_batch/cq-out/ -o /mnt/speed/kanagarajM/pipeline_batch/ -g u --cd -r 72414
 
 
-my ( $input, $output, $genomeType, $part, $cd, $runID, $t, $tc, $assembly, $index, $genes, $transcriptome, $log, $overrideCM, $merge );
+my ( $input, $output, $genomeType, $part, $cd, $runID, $t, $tc, $assembly, $index, $genes, $transcriptome, $log, $overrideCM, $merge, $altAnnotation );
 $part = 0;
 
 GetOptions(	
@@ -35,15 +36,20 @@ GetOptions(
 	'p=i' => \$part,
 	'cd' => \$cd,
 	'r=i' => \$runID,
-	'nocuffmerge' => \$overrideCM
+	'nocuffmerge' => \$overrideCM,
+	'altAnnotation' => \$altAnnotation
 ) or die "Incorrect input and/or output path!\n";
 
 # String checks and manipulation
 die "Invalid part number\n" unless ($part =~ /^[0123]$/);
-die "Invalid genome type\n" unless ($genomeType =~ /^[uen]$/i);
+unless ($altAnnotation){
+	die "Invalid genome type\n" unless ($genomeType =~ /^[uen]$/i);
+}
+
 
 $input =~ s/.$// if (substr($input, -1, 1) eq "/");
-$output = $output . "/" if (substr($output, -1, 1) ne "/"); 
+$output = $output . "/" if (substr($output, -1, 1) ne "/");
+$genomeType =~ s/.$// if ($altAnnotation && substr($input, -1, 1) eq "/");
 
 $log = ">>" . $output . "log_$runID.txt";
 open(LOG, $log) or die "Can't open log";
@@ -62,10 +68,23 @@ elsif ($genomeType eq "n") {
 	$assembly = "NCBI/build37.2";
 }
 
-$index = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Index/known";
+unless ($altAnnotation){
+	$index = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Index/known";
+}
+else{
+	$index = "$genomeType/Index/known";
+}
+
 unless (-e "$index.gff") {
-	$genes = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Annotation/Genes/genes.gtf";
-	$transcriptome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Sequence/Bowtie2Index/genome";
+	unless ($altAnnotation) {
+		$genes = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Annotation/Genes/genes.gtf";
+		$transcriptome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Sequence/Bowtie2Index/genome";
+	}
+	else {
+		$genes = "$genomeType/Annotation/Genes/genes.gtf";
+		$transcriptome = "$genomeType/Sequence/Bowtie2Index/genome";
+	}
+	
 
 	@time=localtime(time);
 	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," Building transcriptome...\n";
