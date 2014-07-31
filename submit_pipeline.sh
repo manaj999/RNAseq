@@ -19,4 +19,4 @@ SAMPLE_LIST=($SAMPLE_DIR/$ARG6);
 INDEX=$((SGE_TASK_ID-1));
 INPUT_FILE=${SAMPLE_LIST[$INDEX]};
 
-perl run_pipeline.pl -i $INPUT_FILE -o $ARG2 -g $ARG3 -p $ARG4 -r $ARG5 -m $ARG7
+perl run_pipeline.pl -i $INPUT_FILE -o $ARG2 -g $ARG3 -p $ARG4 -r $ARG5 -m $ARG7 -n $ARG8

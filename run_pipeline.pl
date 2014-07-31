@@ -44,7 +44,7 @@ sub run_cuffdiff();
 ## $runID is a unique integer ID for organizing and specifying samples to be processed. 
 	### Allows user to use same output directory for all jobs.
 
-my ( $input, $output, $genomeType, $part, $genome, $genes, $merged, $log, $cm, $cd, $runID, $assembly, $index, $transcriptome, $merge );
+my ( $input, $output, $genomeType, $part, $genome, $genes, $merged, $log, $cm, $cd, $runID, $assembly, $index, $transcriptome, $merge, $novel );
 
 # Set defaults
 $genomeType = "u";
@@ -58,7 +58,8 @@ GetOptions(
 	'cm' => \$cm,
 	'cd' => \$cd,
 	'r=i' => \$runID,
-	'm=s' => \$merge
+	'm=s' => \$merge,
+	'n=s' => \$novel
 ) or die "Incorrect input and/or output path!\n";
 
 # Set variable paths
@@ -129,8 +130,11 @@ if ($part == 1) {
 	# RUN TOPHAT SUBROUTINE
 	run_tophat();
 
-	# RUN CUFFLINKS SUBROUTINE
-	run_cufflinks();
+	unless ($novel eq "n") {
+		# RUN CUFFLINKS SUBROUTINE
+		run_cufflinks();
+	}
+	
 
 } elsif ($part == 2) {
 	
@@ -190,7 +194,14 @@ sub run_tophat() {
 	$newFilename = $th_output . "th-out_" . $newFilename . "_$runID";
 
 	# Run tophat
-	`tophat -r 50 -p 8 -o $newFilename --library-type fr-unstranded --solexa1.3-quals --transcriptome-index=$index $transcriptome $file`;
+	if ($novel eq "y"){
+		`tophat -r 50 -p 8 -o $newFilename --library-type fr-unstranded --solexa1.3-quals --transcriptome-index=$index $transcriptome $file`;
+	}
+	elsif ($novel eq "n"){
+		`tophat -r 50 -p 8 -o $newFilename --library-type fr-unstranded --solexa1.3-quals --no-novel-juncs --transcriptome-index=$index $transcriptome $file`;
+	}
+	
+	
 	
 	@time=localtime(time);
 	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," TopHat complete: $newFilename.\n";
@@ -324,7 +335,8 @@ sub run_cummeRbund(){
 	@time=localtime(time);
 	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," Generating cummeRbund summary graphs: $cb_output\n";
 
-	`Rscript cummeRpipe.r $cn_outputcn-out_$runID/ $cb_output $runID`;
+	$cn_output =~ s/.$// if (substr($input, -1, 1) eq "/");
+	`Rscript cummeRpipe.r $cn_output/cn-out_$runID/ $cb_output $runID`;
 
 	@time=localtime(time);
 	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," CummeRbund summary graphs are ready: $cb_output\n";
