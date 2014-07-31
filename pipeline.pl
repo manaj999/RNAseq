@@ -10,6 +10,8 @@ use Getopt::Long;
 	### -g : genome build ... Genome build to be used. "u" for UCSC, "e" for Ensembl, "n" for NCBI
 	### -p : part ... part of the pipeline to be completed. 1 => Tophat and Cufflinks, 2 => Cuffmerge and Cuffquant, 3 => Cuffnorm
 	### -r : runID ... unique runID used to identify and organize outputs from a given run
+	### --cd: cuffdiff (see below)
+	### --nocuffmerge: use to skip running cuffmerge
 
 # Three commands for entire pipeline:
 ## Part 1:
@@ -23,7 +25,7 @@ use Getopt::Long;
 	### perl pipeline.pl -i /mnt/speed/kanagarajM/pipeline_batch/cq-out/ -o /mnt/speed/kanagarajM/pipeline_batch/ -g u --cd -r 72414
 
 
-my ( $input, $output, $genomeType, $part, $cd, $runID, $t, $tc, $assembly, $index, $genes, $transcriptome, $log );
+my ( $input, $output, $genomeType, $part, $cd, $runID, $t, $tc, $assembly, $index, $genes, $transcriptome, $log, $overrideCM, $merge );
 $part = 0;
 
 GetOptions(	
@@ -32,7 +34,8 @@ GetOptions(
 	'g=s' => \$genomeType,
 	'p=i' => \$part,
 	'cd' => \$cd,
-	'r=i' => \$runID
+	'r=i' => \$runID,
+	'nocuffmerge' => \$overrideCM
 ) or die "Incorrect input and/or output path!\n";
 
 # String checks and manipulation
@@ -45,6 +48,8 @@ $output = $output . "/" if (substr($output, -1, 1) ne "/");
 $log = ">>" . $output . "log_$runID.txt";
 open(LOG, $log) or die "Can't open log";
 my @time=localtime(time);
+
+if ($overrideCM) { $merge = "n"; } else { $merge = "y"; }
 
 ### BUILD TRANSCRIPTOME ###
 if ($genomeType eq "u") {
@@ -87,12 +92,14 @@ if ($part == 1) {
 	$t = "1-".$tc;
 	if ($tc > 100) { $tc = 75; }
 
-	`qsub -t $t -tc $tc -v ARG1=$input,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix submit_pipeline.sh`;
+	`qsub -t $t -tc $tc -v ARG1=$input,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix,ARG7=$merge submit_pipeline.sh`;
 }
 elsif ($part == 2){
-
-	# After all samples have been processed in part 1, merge their transcripts using Cuffmerge before proceeding to cuffquant step
-	`perl run_pipeline.pl -i $input -o $output -g $genomeType -p $part -r $runID --cm`;
+	unless($overrideCM) {
+		# After all samples have been processed in part 1, merge their transcripts using Cuffmerge before proceeding to cuffquant step
+		`perl run_pipeline.pl -i $input -o $output -g $genomeType -p $part -r $runID -m $merge --cm`;
+	}
+	
 
 	# Glob all relevant tophat output directories and run in parallel through Sun Grid Engine using qsub command to execute cuffquant
 	my $suffix = "th-out/th-out_*_$runID";
@@ -101,18 +108,18 @@ elsif ($part == 2){
 	$t = "1-".$tc;
 	if ($tc > 100) { $tc = 75; }
 
-	`qsub -t $t -tc $tc -v ARG1=$output,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix submit_pipeline.sh`;
+	`qsub -t $t -tc $tc -v ARG1=$output,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix,ARG7=$merge submit_pipeline.sh`;
 }
 elsif ($part == 3){
 
 	# After all samples have been run through cuffquant in Step 2, submit cuffnorm job to Sun Grid Engine
-	`qsub -pe parallel 8 -V -S /usr/bin/perl run_pipeline.pl -i $input -o $output -g $genomeType -p $part -r $runID`;
+	`qsub -pe parallel 8 -V -S /usr/bin/perl run_pipeline.pl -i $input -o $output -g $genomeType -p $part -r $runID -m $merge`;
 }
 
 # Should differential expression analysis be of interest, submit cuffdiff job to Sun Grid Engine after completing Step 2
 # Specify input as a directory containing cq-out folders for samples of interest
 if ($cd){
-	`qsub -pe parallel 8 -V -S /usr/bin/perl run_pipeline.pl -i $input -o $output -g $genomeType -r $runID --cd`;
+	`qsub -pe parallel 8 -V -S /usr/bin/perl run_pipeline.pl -i $input -o $output -g $genomeType -r $runID -m $merge --cd`;
 }
 
 

@@ -44,7 +44,7 @@ sub run_cuffdiff();
 ## $runID is a unique integer ID for organizing and specifying samples to be processed. 
 	### Allows user to use same output directory for all jobs.
 
-my ( $input, $output, $genomeType, $part, $genome, $genes, $merged, $log, $cm, $cd, $runID, $assembly, $index, $transcriptome );
+my ( $input, $output, $genomeType, $part, $genome, $genes, $merged, $log, $cm, $cd, $runID, $assembly, $index, $transcriptome, $merge );
 
 # Set defaults
 $genomeType = "u";
@@ -57,7 +57,8 @@ GetOptions(
 	'p=i' => \$part,
 	'cm' => \$cm,
 	'cd' => \$cd,
-	'r=i' => \$runID
+	'r=i' => \$runID,
+	'm=s' => \$merge
 ) or die "Incorrect input and/or output path!\n";
 
 # Set variable paths
@@ -129,7 +130,7 @@ if ($part == 1) {
 	
 	# RUN CUFFMERGE SUBROUTINE
 	## Run cuffmerge only once based on command in pipeline.pl
-	if ($cm) { 
+	if ($cm && $merge eq "y") { 
 		
 		run_cuffmerge();
 
@@ -242,7 +243,12 @@ sub run_cuffmerge() {
 sub run_cuffquant() {
 	# Example command for this subroutine
 	## perl run_cuffquant.pl -i /mnt/speed/kanagarajm/th-out/th-out_HSB* -o /mnt/speed/kanagarajm -g u
-	$merged = $cm_output . "cm-out_$runID/merged.gtf";
+	if ( $merge eq "y" ) {
+		$merged = $cm_output . "cm-out_$runID/merged.gtf";
+	}
+	elsif ( $merge eq "n" ){
+		$merged = $genes;
+	}	
 
 	$file = $input . "/accepted_hits.bam";
 	my $newFilename = $input;
@@ -265,7 +271,12 @@ sub run_cuffquant() {
 
 sub run_cuffnorm() {
 	# Access merged transcriptome for use in cuffnorm
-	$merged = $cm_output . "cm-out_$runID/merged.gtf";
+	if ( $merge eq "y" ) {
+		$merged = $cm_output . "cm-out_$runID/merged.gtf";
+	}
+	elsif ( $merge eq "n" ){
+		$merged = $genes;
+	}	
 
 	# Concatenate all 'abundances.cxb' files and sample names to be used in a single cuffnorm call.
 	my $abundances = '';
@@ -315,7 +326,12 @@ sub run_cummeRbund(){
 
 sub run_cuffdiff(){
 	# Access merged transcriptome for use in cuffnorm
-	$merged = $cm_output . "cm-out_$runID/merged.gtf";
+	if ( $merge eq "y" ) {
+		$merged = $cm_output . "cm-out_$runID/merged.gtf";
+	}
+	elsif ( $merge eq "n" ){
+		$merged = $genes;
+	}	
 
 	# Concatenate all 'abundances.cxb' files and sample names to be used in a single cuffdiff call.
 	my $abundances = '';
