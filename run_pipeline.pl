@@ -322,12 +322,12 @@ sub run_cummeRbund(){
 
 	# can make them pipe to new directory just for those runs if you really care to
 	@time=localtime(time);
-	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," Generating cummeRbund summary graphs: $cd_output\n";
+	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," Generating cummeRbund summary graphs: $cb_output\n";
 
-	`Rscript cummeRpipe.r $input $output $runID`;
+	`Rscript cummeRpipe.r $cn_outputcn-out_$runID/ $cb_output $runID`;
 
 	@time=localtime(time);
-	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," CummeRbund summary graphs are ready: $cd_output\n";
+	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," CummeRbund summary graphs are ready: $cb_output\n";
 }
 
 sub run_cuffdiff(){

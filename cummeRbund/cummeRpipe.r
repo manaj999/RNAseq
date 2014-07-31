@@ -3,6 +3,7 @@
 arg = commandArgs(trailingOnly = TRUE)
 
 setwd(arg[1])
+# need to make sure rdata file is there.. most likely won't be in pipeline_batch directory. also is paste0 a problem?
 load(".RData")
 library(cummeRbund)
 cuff<-readCufflinks()
