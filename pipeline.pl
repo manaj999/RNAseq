@@ -51,7 +51,7 @@ unless ($altAnnotation){
 
 $input =~ s/.$// if (substr($input, -1, 1) eq "/");
 $output = $output . "/" if (substr($output, -1, 1) ne "/");
-$genomeType =~ s/.$// if ($altAnnotation && substr($input, -1, 1) eq "/");
+$genomeType =~ s/.$// if ($altAnnotation && (substr($genomeType, -1, 1) eq "/"));
 
 $log = ">>" . $output . "log_$runID.txt";
 open(LOG, $log) or die "Can't open log";
