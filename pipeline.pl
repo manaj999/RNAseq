@@ -7,13 +7,15 @@ use Getopt::Long;
 ## ARGUMENTS:
 	### -i : input ... Directory containing all fastq files to be run through pipeline
 	### -o : output ... Directory where all output files will be organized and saved
-	### -g : genome build ... Genome build to be used. "u" for UCSC, "e" for Ensembl, "n" for NCBI. If using --altAnnotation, then specify PATH
+	### -g : genome build ... Genome build to be used. "u" for UCSC, "e" for Ensembl, "n" for NCBI, "g10" for Gencode v10, "g19" for Gencode v19, "m2" for Gencode m2. 
+		#### If using --altAnnotation, then specify PATH of directory containing necessary files for building transcriptome
 	### -p : part ... part of the pipeline to be completed. 1 => Tophat and Cufflinks, 2 => Cuffmerge and Cuffquant, 3 => Cuffnorm
 	### -r : runID ... unique runID used to identify and organize outputs from a given run
 	### --cd: cuffdiff (see below)
 	### --nocuffmerge: use to skip running cuffmerge
 	### --altAnnotation: use a different genome assembly. Specify directory where "Sequence" and "Annotation" folders are located in -g option.
 	### --nodiscovery: use to skip gene/transcript discovery and only quantify reference annotation
+	### --pairedEnd: use for paired-end sequencing reads
 
 # Three commands for entire pipeline:
 ## Part 1:
@@ -27,7 +29,7 @@ use Getopt::Long;
 	### perl pipeline.pl -i /mnt/speed/kanagarajM/pipeline_batch/cq-out/ -o /mnt/speed/kanagarajM/pipeline_batch/ -g u --cd -r 72414
 
 
-my ( $input, $output, $genomeType, $part, $cd, $runID, $t, $tc, $assembly, $index, $genes, $transcriptome, $log, $overrideCM, $merge, $altAnnotation, $overrideDisc, $novel );
+my ( $input, $output, $genomeType, $part, $cd, $runID, $t, $tc, $assembly, $index, $genes, $transcriptome, $log, $overrideCM, $merge, $altAnnotation, $overrideDisc, $novel, $paired );
 $part = 0;
 
 GetOptions(	
@@ -39,13 +41,14 @@ GetOptions(
 	'r=i' => \$runID,
 	'nocuffmerge' => \$overrideCM,
 	'altAnnotation' => \$altAnnotation,
-	'nodiscovery' => \$overrideDisc
+	'nodiscovery' => \$overrideDisc,
+	'pairedEnd' => \$paired
 ) or die "Incorrect input and/or output path!\n";
 
 # String checks and manipulation
 die "Invalid part number\n" unless ($part =~ /^[0123]$/);
 unless ($altAnnotation){
-	die "Invalid genome type\n" unless ($genomeType =~ /^[uen]$/i);
+	die "Invalid genome type\n" unless (($genomeType =~ /^[uen]$/i) or ($genomeType =~ /^g1[09]$/i) or ($genomeType =~ /^m2$/i));
 }
 
 
@@ -71,6 +74,16 @@ elsif ($genomeType eq "e") {
 elsif ($genomeType eq "n") {
 	$assembly = "NCBI/build37.2";
 }
+elsif ($genomeType eq "g10") {
+	$assembly = "GENCODE/v10";
+}
+elsif ($genomeType eq "g19") {
+	$assembly = "GENCODE/v19";
+}
+elsif ($genomeType eq "m2") {
+	$assembly = "GENCODE/m2";
+}
+
 
 unless ($altAnnotation){
 	$index = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Index/known";
@@ -115,7 +128,7 @@ if ($part == 1) {
 	$t = "1-".$tc;
 	if ($tc > 100) { $tc = 75; }
 
-	`qsub -t $t -tc $tc -v ARG1=$input,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix,ARG7=$merge,ARG8=$novel submit_pipeline.sh`;
+	`qsub -t $t -tc $tc -v ARG1=$input,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix,ARG7=$merge,ARG8=$novel,ARG9=$paired submit_pipeline.sh`;
 }
 elsif ($part == 2){
 	unless($overrideCM) {
@@ -131,7 +144,7 @@ elsif ($part == 2){
 	$t = "1-".$tc;
 	if ($tc > 100) { $tc = 75; }
 
-	`qsub -t $t -tc $tc -v ARG1=$output,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix,ARG7=$merge,ARG8=$novel submit_pipeline.sh`;
+	`qsub -t $t -tc $tc -v ARG1=$output,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix,ARG7=$merge,ARG8=$novel,ARG9=$paired submit_pipeline.sh`;
 }
 elsif ($part == 3){
 

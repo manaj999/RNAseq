@@ -36,7 +36,7 @@ sub run_cuffdiff();
 ## $output stores the absolute path of the directory where files are to be output
 	### Part 1 and Part 2: same path for both parts
 ## $genomeType specifies which version of the genome sequence is to be used
-	### Part 1 and Part 2: 'u' for UCSC, 'e' for Ensembl, 'n' for NCBI
+	### Part 1 and Part 2: 'u' for UCSC, 'e' for Ensembl, 'n' for NCBI, 'g10' for Gencode v10, 'g19' for Gencode v19, 'm2' for Gencode m2.
 ## $part specifies which part of the script is to be run
 	### 1 for part 1 | 2 for part 2
 ## $genome, $genes, $merged variables store the path of files for easier access later in the script
@@ -44,7 +44,7 @@ sub run_cuffdiff();
 ## $runID is a unique integer ID for organizing and specifying samples to be processed. 
 	### Allows user to use same output directory for all jobs.
 
-my ( $input, $output, $genomeType, $part, $genome, $genes, $merged, $log, $cm, $cd, $runID, $assembly, $index, $transcriptome, $merge, $novel );
+my ( $input, $output, $genomeType, $part, $genome, $genes, $merged, $log, $cm, $cd, $runID, $assembly, $index, $transcriptome, $merge, $novel, $paired );
 
 # Set defaults
 $genomeType = "u";
@@ -59,7 +59,8 @@ GetOptions(
 	'cd' => \$cd,
 	'r=i' => \$runID,
 	'm=s' => \$merge,
-	'n=s' => \$novel
+	'n=s' => \$novel,
+	'e=i' => \$paired
 ) or die "Incorrect input and/or output path!\n";
 
 # Set variable paths
@@ -72,12 +73,22 @@ elsif ($genomeType eq "e") {
 elsif ($genomeType eq "n") {
 	$assembly = "NCBI/build37.2";
 }
+elsif ($genomeType eq "g10") {
+	$assembly = "GENCODE/v10";
+}
+elsif ($genomeType eq "g19") {
+	$assembly = "GENCODE/v19";
+}
+elsif ($genomeType eq "m2") {
+	$assembly = "GENCODE/m2";
+}
+
 $genes = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Annotation/Genes/genes.gtf";
 $genome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Sequence/WholeGenomeFasta/genome.fa";
 $index = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Index/known";
 $transcriptome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Sequence/Bowtie2Index/genome";
 
-if ($genomeType ne "u" && $genomeType ne "e" && $genomeType ne "n" ){
+if ($genomeType ne "u" && $genomeType ne "e" && $genomeType ne "n" && $genomeType ne "g10" && $genomeType ne "g19" && $genomeType ne "m2"){
 	$genes = "$genomeType/Annotation/Genes/genes.gtf";
 	$genome = "$genomeType/Sequence/WholeGenomeFasta/genome.fa";
 	$index = "$genomeType/Index/known";
