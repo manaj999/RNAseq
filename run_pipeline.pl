@@ -79,17 +79,17 @@ elsif ($genomeType eq "m2") {
 	$assembly = "GENCODE/m2";
 }
 
-$genes = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Annotation/Genes/genes.gtf";
-$genome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Sequence/WholeGenomeFasta/genome.fa";
-$index = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Index/known";
-$transcriptome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Sequence/Bowtie2Index/genome";
-
 if ($genomeType ne "u" && $genomeType ne "e" && $genomeType ne "n" && $genomeType ne "g10" && $genomeType ne "g19" && $genomeType ne "m2"){
 	$genes = "$genomeType/Annotation/Genes/genes.gtf";
 	$genome = "$genomeType/Sequence/WholeGenomeFasta/genome.fa";
 	$index = "$genomeType/Index/known";
 	$transcriptome = "$genomeType/Sequence/Bowtie2Index/genome";
 }
+
+$genes = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Annotation/Genes/genes.gtf";
+$genome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Sequence/WholeGenomeFasta/genome.fa";
+$index = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Index/known";
+$transcriptome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Sequence/Bowtie2Index/genome";
 
 # FORMAT INPUT/OUTPUT
 ## The following string modifications are meant to ensure that the component subroutines
