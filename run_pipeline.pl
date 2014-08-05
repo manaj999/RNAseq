@@ -46,10 +46,6 @@ sub run_cuffdiff();
 
 my ( $input, $output, $genomeType, $part, $genome, $genes, $merged, $log, $cm, $cd, $runID, $assembly, $index, $transcriptome, $merge, $novel, $paired );
 
-# Set defaults
-$genomeType = "u";
-$part = 0;
-
 GetOptions(	
 	'o=s' => \$output,
 	'i=s' => \$input,
@@ -60,7 +56,7 @@ GetOptions(
 	'r=i' => \$runID,
 	'm=s' => \$merge,
 	'n=s' => \$novel,
-	'e=i' => \$paired
+	'e=s' => \$paired
 ) or die "Incorrect input and/or output path!\n";
 
 # Set variable paths
@@ -156,14 +152,13 @@ if ($part == 1) {
 		run_cuffmerge();
 
 	}
-	else {
-
-		# RUN CUFFQUANT SUBROUTINE
-		run_cuffquant();
-		
-	}
 	
-} elsif ($part == 3){
+} elsif ($part == 3) {
+
+	# RUN CUFFQUANT SUBROUTINE
+	run_cuffquant();
+
+} elsif ($part == 4){
 	# RUN CUFFNORM SUBROUTINE
 		
 	run_cuffnorm();
@@ -198,6 +193,7 @@ sub run_tophat() {
 	$newFilename =~ s#\.fq##;
 	$newFilename =~ s#\.gz##;
 	$newFilename =~ s#^.*/##;
+	$newFilename =~ s#_R1## if ($paired);
 
 	@time=localtime(time);
 	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," Running TopHat on sample $newFilename\n";
@@ -206,10 +202,22 @@ sub run_tophat() {
 
 	# Run tophat
 	if ($novel eq "y"){
-		`tophat -r 50 -p 8 -o $newFilename --library-type fr-unstranded --solexa1.3-quals --transcriptome-index=$index $transcriptome $file`;
+		if ($paired) {
+			`tophat -r 50 -p 8 -o $newFilename --library-type fr-unstranded --solexa1.3-quals --transcriptome-index=$index $transcriptome $file $paired`;
+		}
+		else {
+			`tophat -r 50 -p 8 -o $newFilename --library-type fr-unstranded --solexa1.3-quals --transcriptome-index=$index $transcriptome $file`;
+		}
+		
 	}
 	elsif ($novel eq "n"){
-		`tophat -r 50 -p 8 -o $newFilename --library-type fr-unstranded --solexa1.3-quals --no-novel-juncs --transcriptome-index=$index $transcriptome $file`;
+		if ($paired) {
+			`tophat -r 50 -p 8 -o $newFilename --library-type fr-unstranded --solexa1.3-quals --no-novel-juncs --transcriptome-index=$index $transcriptome $file $paired`;
+		}
+		else {
+			`tophat -r 50 -p 8 -o $newFilename --library-type fr-unstranded --solexa1.3-quals --no-novel-juncs --transcriptome-index=$index $transcriptome $file`;
+		}
+		
 	}
 	
 	
