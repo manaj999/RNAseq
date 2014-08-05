@@ -132,10 +132,10 @@ if ($part == 1) {
 	$tc = 75 if ($tc > 100);
 
 	if ($paired){
-		`qsub -t $t -tc $tc -v ARG1=$input,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix,ARG7=$merge,ARG8=$novel parallel_multiple.sh`;
+		`qsub -t $t -tc $tc -v ARG1=$input,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix,ARG7=$merge,ARG8=$novel submit_pipeline_paired_1.sh`;
 	}
 	else {
-		`qsub -t $t -tc $tc -v ARG1=$input,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix,ARG7=$merge,ARG8=$novel parallel.sh`;
+		`qsub -t $t -tc $tc -v ARG1=$input,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix,ARG7=$merge,ARG8=$novel submit_pipeline_1.sh`;
 	}
 	
 }
@@ -153,12 +153,12 @@ elsif ($part == 3){
 	$t = "1-".$tc;
 	$tc = 75 if ($tc > 100);
 
-	`qsub -t $t -tc $tc -v ARG1=$output,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix,ARG7=$merge,ARG8=$novel parallel.sh`;
+	`qsub -t $t -tc $tc -v ARG1=$output,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix,ARG7=$merge,ARG8=$novel submit_pipeline_2.sh`;
 }
 elsif ($part == 4){
 
 	# After all samples have been run through cuffquant in Step 2, submit cuffnorm job to Sun Grid Engine
-	`qsub -pe parallel 8 -V -S /usr/bin/perl run_pipeline.pl -i $input -o $output -g $genomeType -p $part -r $runID -m $merge -n $novel`;
+	`perl run_pipeline.pl -i $input -o $output -g $genomeType -p $part -r $runID -m $merge -n $novel`;
 }
 
 # Should differential expression analysis be of interest, submit cuffdiff job to Sun Grid Engine after completing Step 2
