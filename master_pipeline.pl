@@ -3,22 +3,22 @@ use strict;
 use warnings;
 use Getopt::Long;
 
-my ( $input, $output, $genomeType, $part, $cd, $runID, $t, $tc, $assembly, $index, $genes, $transcriptome, $log, $overrideCM, $merge, $altAnnotation, $overrideDisc, $novel, $paired );
+my ( $input, $output, $genomeType, $cd, $runID, $overrideCM, $altAnnotation, $overrideDisc, $paired );
 
 GetOptions(	
 	'o=s' => \$output,
 	'i=s' => \$input,
 	'g=s' => \$genomeType,
-	'p=i' => \$part,
 	'cd' => \$cd,
 	'r=i' => \$runID,
 	'nocuffmerge' => \$overrideCM,
 	'altAnnotation' => \$altAnnotation,
 	'nodiscovery' => \$overrideDisc,
-	'pairedEnd' => \$paired
+	'pairedEnd' => \$paired,
+	'cd' => \$cd
 ) or die "Incorrect input and/or output path!\n";
 
-my $arguments = "ARG1=$input,ARG2=$output,ARG3=$genomeType,ARG4=runID";
+my $arguments = "ARG1=$input,ARG2=$output,ARG3=$genomeType,ARG4=$runID";
 $arguments = $arguments . ",ARG5=--cd" if($cd);
 $arguments = $arguments . ",ARG6=--nocuffmerge" if($overrideCM);
 $arguments = $arguments . ",ARG7=--altAnnotation" if($altAnnotation);

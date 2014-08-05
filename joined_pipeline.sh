@@ -1,9 +1,9 @@
 # args: 1 input, 2 output, 3 genometype, 4 runID, 5 cd, 6 nocuffmerge, 7 altAnnotation, 8 nodiscovery, 9 pairedEnd
-qsub -pe parallel 8 -V -N pipelineBuild -S /usr/bin/perl pipeline.pl -i $ARG1 -o $ARG2 -g $ARG3 -p 0 -r $ARG4 $ARG5 $ARG6 $ARG7 $ARG8 $ARG9;
+qsub -V -N pipelineBuild -pe parallel 8 -S /usr/bin/perl pipeline.pl -i $ARG1 -o $ARG2 -g $ARG3 -p 0 -r $ARG4 $ARG5 $ARG6 $ARG7 $ARG8 $ARG9;
 BUILD_JID=(`qstat|grep "pipelineBuild"|awk '{print $1;}'`);
 echo $BUILD_JID;
 
-qsub -hold_jid $BUILD_JID -pe parallel 8 -V -l h=ihg-node-1 -N pipelineThCl -S /usr/bin/perl pipeline.pl -i $ARG1 -o $ARG2 -g $ARG3 -p 1 -r $ARG4 $ARG5 $ARG6 $ARG7 $ARG8 $ARG9;
+qsub -hold_jid $BUILD_JID -V -l h=ihg-node-1 -N pipelineThCl -S /usr/bin/perl pipeline.pl -i $ARG1 -o $ARG2 -g $ARG3 -p 1 -r $ARG4 $ARG5 $ARG6 $ARG7 $ARG8 $ARG9;
 sleep 10;
 THCL_JID=(`qstat|grep "sub_pipe_1"|awk '{print $1;}'`);
 echo $THCL_JID;
@@ -12,7 +12,7 @@ qsub -hold_jid $THCL_JID -pe parallel 8 -V -N pipelineCm -S /usr/bin/perl pipeli
 CM_JID=(`qstat|grep "pipelineCm"|awk '{print $1;}'`);
 echo $CM_JID;
 
-qsub -hold_jid $CM_JID -pe parallel 8 -V -l h=ihg-node-1 -N pipelineCq -S /usr/bin/perl pipeline.pl -i $ARG1 -o $ARG2 -g $ARG3 -p 3 -r $ARG4 $ARG5 $ARG6 $ARG7 $ARG8 $ARG9;
+qsub -hold_jid $CM_JID -V -l h=ihg-node-1 -N pipelineCq -S /usr/bin/perl pipeline.pl -i $ARG1 -o $ARG2 -g $ARG3 -p 3 -r $ARG4 $ARG5 $ARG6 $ARG7 $ARG8 $ARG9;
 sleep 10;
 CQ_JID=(`qstat|grep "sub_pipe_2"|awk '{print $1;}'`);
 echo $CQ_JID;

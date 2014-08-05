@@ -85,11 +85,14 @@ if ($genomeType ne "u" && $genomeType ne "e" && $genomeType ne "n" && $genomeTyp
 	$index = "$genomeType/Index/known";
 	$transcriptome = "$genomeType/Sequence/Bowtie2Index/genome";
 }
+else{
+	$genes = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Annotation/Genes/genes.gtf";
+	$genome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Sequence/WholeGenomeFasta/genome.fa";
+	$index = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Index/known";
+	$transcriptome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Sequence/Bowtie2Index/genome";
+}
 
-$genes = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Annotation/Genes/genes.gtf";
-$genome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Sequence/WholeGenomeFasta/genome.fa";
-$index = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Index/known";
-$transcriptome = "/mnt/state_lab/reference/transcriptomeData/Homo_sapiens/$assembly/Sequence/Bowtie2Index/genome";
+
 
 # FORMAT INPUT/OUTPUT
 ## The following string modifications are meant to ensure that the component subroutines

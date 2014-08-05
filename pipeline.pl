@@ -46,7 +46,7 @@ GetOptions(
 
 # String checks and manipulation
 die "Invalid part number\n" unless ($part =~ /^[01234]$/);
-unless ($altAnnotation){
+if ($altAnnotation){
 	die "Invalid genome type\n" unless (($genomeType =~ /^[uen]$/i) or ($genomeType =~ /^g1[09]$/i) or ($genomeType =~ /^m2$/i));
 }
 
