@@ -3,19 +3,6 @@ use strict;
 use warnings;
 use Getopt::Long;
 
-# THIS SCRIPT CAN BE RUN WITH FOUR DIFFERENT COMPONENTS.
-## Part 1 accepts a FastQ file of the RNAseq sample and then runs it through tophat and cufflinks.
-## Part 2 collects all files processed through Part 1 and runs them through cuffmerge and cuffquant individually.
-	### The separation of Part 1 and Part 2 is necessary because cuffmerge cannot assemble 
-	### a merged transcriptome assembly until all samples have been processed through cufflinks.
-	### The merged.gtf file is neeeded to run cuffquant and cuffnorm.
-## Part 3 collects all files processed through Part 2 and runs them through cuffnorm together.
-## The fourth component (CD) is optional. It collects all files processed through Part 2 and runs them through cuffdiff.
-	### The separation of Part 2 and Parts 3 and CD is necessary because both cuffnorm and cuffdiff 
-	### can only be run once all samples have been processed through cuffquant
-
-# EXAMPLE COMMAND LINE CALLS:
-## perl run_pipeline.pl -i /home/kanagarajm/HSB103.A1C.fq -o /mnt/speed/kanagarajM/pipeline/ -g u -p 1
 
 
 
@@ -27,22 +14,6 @@ sub run_cuffquant();
 sub run_cuffnorm();
 sub run_cummeRbund();
 sub run_cuffdiff();
-
-
-# DECLARE GLOBAL VARIABLES
-## $input stores the absolute path of the input file to be used.
-	### Part 1: FastQ file of sample
-	### Part 2: th-out directory of sample
-## $output stores the absolute path of the directory where files are to be output
-	### Part 1 and Part 2: same path for both parts
-## $genomeType specifies which version of the genome sequence is to be used
-	### Part 1 and Part 2: 'u' for UCSC, 'e' for Ensembl, 'n' for NCBI, 'g10' for Gencode v10, 'g19' for Gencode v19, 'm2' for Gencode m2.
-## $part specifies which part of the script is to be run
-	### 1 for part 1 | 2 for part 2
-## $genome, $genes, $merged variables store the path of files for easier access later in the script
-## $log represents the output log file, while $cm and $cd are flags for cuffmerge and cuffdiff, respectively
-## $runID is a unique integer ID for organizing and specifying samples to be processed. 
-	### Allows user to use same output directory for all jobs.
 
 my ( $input, $output, $genomeType, $part, $genome, $genes, $merged, $log, $cm, $cd, $runID, $assembly, $index, $transcriptome, $merge, $novel, $paired );
 
@@ -144,7 +115,7 @@ if ($part == 1) {
 		# RUN CUFFLINKS SUBROUTINE
 		run_cufflinks();
 	}
-	
+
 
 } elsif ($part == 2) {
 	
@@ -181,6 +152,7 @@ if ($cd){
 
 }
 
+
 close(LOG);
 
 
@@ -204,6 +176,10 @@ sub run_tophat() {
 	$newFilename = $th_output . "th-out_" . $newFilename . "_$runID";
 
 	# Run tophat
+
+
+	my $cur = `pwd`;
+	print LOG $cur."\n";
 	if ($novel eq "y"){
 		if ($paired) {
 			`/mnt/state_lab/progs/tophat/bin/tophat -r 50 -p 8 -o $newFilename --library-type fr-unstranded --solexa1.3-quals --transcriptome-index=$index $transcriptome $file $paired`;
@@ -407,8 +383,6 @@ sub run_cuffdiff(){
 	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," Cuffdiff complete: $newFilename\n";
 	
 }
-
-
 
 
 

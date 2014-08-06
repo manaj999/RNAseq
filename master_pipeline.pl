@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Getopt::Long;
 
-my ( $input, $output, $genomeType, $cd, $runID, $overrideCM, $altAnnotation, $overrideDisc, $paired );
+my ( $input, $output, $genomeType, $cd, $runID, $index, $overrideCM, $altAnnotation, $overrideDisc, $paired );
 
 GetOptions(	
 	'o=s' => \$output,
@@ -14,8 +14,7 @@ GetOptions(
 	'nocuffmerge' => \$overrideCM,
 	'altAnnotation' => \$altAnnotation,
 	'nodiscovery' => \$overrideDisc,
-	'pairedEnd' => \$paired,
-	'cd' => \$cd
+	'pairedEnd' => \$paired
 ) or die "Incorrect input and/or output path!\n";
 
 my $arguments = "ARG1=$input,ARG2=$output,ARG3=$genomeType,ARG4=$runID";
@@ -25,7 +24,7 @@ $arguments = $arguments . ",ARG7=--altAnnotation" if($altAnnotation);
 $arguments = $arguments . ",ARG8=--nodiscovery" if($overrideDisc);
 $arguments = $arguments . ",ARG9=--pairedEnd" if($paired);
 
-`qsub -V -l h=ihg-node-27 -v $arguments joined_pipeline.sh`;
+`qsub -V -l h=ihg-node-27 -v $arguments -S /bin/sh joined_pipeline.sh`;
 
 #-v ARG1=$input,ARG2=$output,ARG3=$genomeType,ARG4=$part,ARG5=$runID,ARG6=$suffix,ARG7=$merge,ARG8=$novel submit_pipeline_paired_1.sh
 
