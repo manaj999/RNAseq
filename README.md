@@ -1,7 +1,7 @@
-####Pipeline for RNAseq using TUXEDO protocols
-```
-##*Scripts required in home directory:*
+######Pipeline for RNAseq using TUXEDO protocols
 
+####*Scripts required in home directory:*
+```
 rna_seq_pipeline.pl
 rna_seq_pipeline.sh
 
@@ -16,8 +16,31 @@ cn_hold.sh
 cummeRpipe.r
 ```
 ----------------------------------------------------------------------------------
+####**Description:**
 ```
-**USAGE:**
+	This script serves as the wrapper for the entire Tuxedo pipeline.
+	It has been written to optimize the processing of multiple FASTQ 
+	files produced via RNA sequencing by running them modularly in 
+	parallel using the Oracle Sun Grid Engine (SGE).
+	
+	Together this collection of scripts can produce detailed expression 
+	metrics and publication-ready graphs produced from cuffnorm/cuffdiff
+	and cummeRbund, respectively, with just a single line of code from
+	the command line.
+
+	Within the given output directory, this script will create subdirectories
+	that store the results of each component in the Tuxedo Suite. The output
+	directory will also contain a log file that broadly documents the progress
+	of the pipeline. More detailed logs can be found in each component's subdirectory.
+
+	If you wish to run cuffdiff you must use the pipeline.pl script after this 
+	pipeline has completed. For more information on using cuffdiff, enter
+	"perl pipeline.pl --cd" at the commandline.
+```
+----------------------------------------------------------------------------------
+#### **USAGE**
+```
+**GENERAL:**
 	perl rna_seq_pipeline.pl -i <INPUT> -o <OUTPUT> -g <GENOME> -r <RUNID> <OPTIONS>
 
 **EXAMPLE RUN:**
@@ -43,26 +66,4 @@ cummeRpipe.r
 							and "Annotation" folders are located in -g argument
 	--nodiscovery			Use to skip gene/transcript discovery and only quantify reference annotation
 	--pairedEnd 			Use for if sequencing reads are paired-end, as opposed to single-end
-```
-----------------------------------------------------------------------------------
-```
-**Description:**
-	This script serves as the wrapper for the entire Tuxedo pipeline.
-	It has been written to optimize the processing of multiple FASTQ 
-	files produced via RNA sequencing by running them modularly in 
-	parallel using the Oracle Sun Grid Engine (SGE).
-	
-	Together this collection of scripts can produce detailed expression 
-	metrics and publication-ready graphs produced from cuffnorm/cuffdiff
-	and cummeRbund, respectively, with just a single line of code from
-	the command line.
-
-	Within the given output directory, this script will create subdirectories
-	that store the results of each component in the Tuxedo Suite. The output
-	directory will also contain a log file that broadly documents the progress
-	of the pipeline. More detailed logs can be found in each component's subdirectory.
-
-	If you wish to run cuffdiff you must use the pipeline.pl script after this 
-	pipeline has completed. For more information on using cuffdiff, enter
-	"perl pipeline.pl --cd" at the commandline.
 ```
