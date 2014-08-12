@@ -1,6 +1,6 @@
-Pipeline for RNAseq using TUXEDO protocols
+####Pipeline for RNAseq using TUXEDO protocols
 ```
-Scripts required in home directory:
+##*Scripts required in home directory:*
 
 rna_seq_pipeline.pl
 rna_seq_pipeline.sh
@@ -17,13 +17,13 @@ cummeRpipe.r
 ```
 ----------------------------------------------------------------------------------
 ```
-USAGE:
+**USAGE:**
 	perl rna_seq_pipeline.pl -i <INPUT> -o <OUTPUT> -g <GENOME> -r <RUNID> <OPTIONS>
 
-EXAMPLE RUN:
+**EXAMPLE RUN:**
 	perl rna_seq_pipeline.pl -i /home/kanagarajm/samples_fq/ -o /mnt/state_lab/share/Manoj/rna_seq_out/ -g u -r 81214 --pairedEnd
 
-REQUIRED ARGUMENTS:
+**REQUIRED ARGUMENTS:**
 	-i (input)				Directory containing all fastq files to be run through pipeline
 	-o (output)				Directory where all output files will be organized and saved
 	-g (genome build)			Genome build to be used 
@@ -37,14 +37,16 @@ REQUIRED ARGUMENTS:
 								containing necessary files for building transcriptome here instead
 	-r (runID)				Unique runID used to identify and organize outputs from a given run
 
-OPTIONS:
+**OPTIONS:**
 	--nocuffmerge			Use to skip running cuffmerge
 	--altAnnotation			Use a different genome assembly. Specify directory where "Sequence" 
 							and "Annotation" folders are located in -g argument
 	--nodiscovery			Use to skip gene/transcript discovery and only quantify reference annotation
 	--pairedEnd 			Use for if sequencing reads are paired-end, as opposed to single-end
 ```
-Description:
+----------------------------------------------------------------------------------
+```
+**Description:**
 	This script serves as the wrapper for the entire Tuxedo pipeline.
 	It has been written to optimize the processing of multiple FASTQ 
 	files produced via RNA sequencing by running them modularly in 
@@ -63,3 +65,4 @@ Description:
 	If you wish to run cuffdiff you must use the pipeline.pl script after this 
 	pipeline has completed. For more information on using cuffdiff, enter
 	"perl pipeline.pl --cd" at the commandline.
+```
