@@ -1,4 +1,5 @@
-#### Pipeline for RNAseq using TUXEDO protocols
+#### Pipeline for RNAseq 
+#### using TUXEDO protocols
 
 ### **Scripts required in home directory:**
 ```
@@ -17,7 +18,7 @@ cummeRpipe.r
 ```
 ----------------------------------------------------------------------------------
 ### **Description:**
-```
+
 	This script serves as the wrapper for the entire Tuxedo pipeline.
 	It has been written to optimize the processing of multiple FASTQ 
 	files produced via RNA sequencing by running them modularly in 
@@ -36,7 +37,7 @@ cummeRpipe.r
 	If you wish to run cuffdiff you must use the pipeline.pl script after this 
 	pipeline has completed. For more information on using cuffdiff, enter
 	"perl pipeline.pl --cd" at the commandline.
-```
+
 ----------------------------------------------------------------------------------
 ### **Usage:**
 ```
