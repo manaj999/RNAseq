@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 
+# USAGE: Used to print out separated file headers when Gencode internal and external were compared
 
 open(HEAD, "<header.txt") or die "failed, $!";
 my @titles;

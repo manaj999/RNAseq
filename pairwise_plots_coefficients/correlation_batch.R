@@ -1,5 +1,9 @@
 #!/usr/bin/Rscript
 
+# Rscript correlation_batch.R <INPUT PATH> <OUTPUT PATH>
+# Usage: Produces plots and correlation coefficients for all pairwise combinations of given samples for each annotation
+## PLEASE SEE README.txt for more info
+
 arg = commandArgs(trailingOnly = TRUE)
 
 in_path = arg[1]
@@ -18,7 +22,7 @@ lines=readLines(fh)
 
 # output file for correlation values
 #fileOut<-file("correlation_batch_out.txt")
-sink("correlation_temp_out.txt")
+sink("correlation_batch_out.txt")
 
 
 for (i in 1:length(lines)){
@@ -26,8 +30,8 @@ for (i in 1:length(lines)){
 
 ### NE ###
 	# # create file names
-	ne_plot<-paste(out_path,paste0(lines[i],"_ne.pdf"),sep="/")
-	pdf(ne_plot)
+	ne_plot<-file.path(out_path,paste0(lines[i],"_ne.pdf"), sep = "/"))
+	pdf(file=ne_plot)
 
 	# # create merged data frame
 	temp<-merge(subset(ncbi_uniq, select=c(lines[i])),subset(ensembl_uniq, select=c(lines[i])),by='row.names')
@@ -42,8 +46,8 @@ for (i in 1:length(lines)){
 	cat("\n")
 
 ### UN ###
-	un_plot<-paste(out_path,paste0(lines[i],"_un.pdf"),sep="/")
-	pdf(un_plot)
+	un_plot<-file.path(out_path,paste0(lines[i],"_un.pdf"), sep = "/"))
+	pdf(file=un_plot)
 
 	temp<-merge(subset(ucsc_uniq, select=c(lines[i])),subset(ncbi_uniq, select=c(lines[i])),by='row.names')
 	colnames(temp)<-c('gene','x','y')
@@ -55,8 +59,8 @@ for (i in 1:length(lines)){
 	cat("\n")
 
 ### UE ###
-	ue_plot<-paste(out_path,paste0(lines[i],"_ue.pdf"),sep="/")
-	pdf(ue_plot)
+	ue_plot<-file.path(out_path,paste0(lines[i],"_ue.pdf"), sep = "/"))
+	pdf(file=ue_plot)
 
 	temp<-merge(subset(ucsc_uniq, select=c(lines[i])),subset(ensembl_uniq, select=c(lines[i])),by='row.names')
 	colnames(temp)<-c('gene','x','y')
@@ -68,8 +72,8 @@ for (i in 1:length(lines)){
 	cat("\n")
 
 ### EG ###
-	eg_plot<-paste(out_path,paste0(lines[i],"_eg.pdf"),sep="/")
-	pdf(eg_plot)
+	eg_plot<-file.path(out_path,paste0(lines[i],"_eg.pdf"), sep = "/"))
+	pdf(file=eg_plot)
 
 	temp<-merge(subset(ensembl_uniq, select=c(lines[i])),subset(gencode_uniq, select=c(lines[i])),by='row.names')
 	colnames(temp)<-c('gene','x','y')
@@ -81,8 +85,8 @@ for (i in 1:length(lines)){
 	cat("\n")
 
 ### UG ###
-	ug_plot<-paste(out_path,paste0(lines[i],"_ug.pdf"),sep="/")
-	pdf(ug_plot)
+	ug_plot<-file.path(out_path,paste0(lines[i],"_ug.pdf"), sep = "/"))
+	pdf(file=ug_plot)
 
 	temp<-merge(subset(ucsc_uniq, select=c(lines[i])),subset(gencode_uniq, select=c(lines[i])),by='row.names')
 	colnames(temp)<-c('gene','x','y')
@@ -94,8 +98,8 @@ for (i in 1:length(lines)){
 	cat("\n")
 
 ### NG ###
-	ng_plot<-paste(out_path,paste0(lines[i],"_ng.pdf"),sep="/")
-	pdf(ng_plot)
+	ng_plot<-file.path(out_path,paste0(lines[i],"_ng.pdf"), sep = "/"))
+	pdf(file=ng_plot)
 
 	temp<-merge(subset(ncbi_uniq, select=c(lines[i])),subset(gencode_uniq, select=c(lines[i])),by='row.names')
 	colnames(temp)<-c('gene','x','y')

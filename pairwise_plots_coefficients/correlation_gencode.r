@@ -2,8 +2,13 @@
 
 # Rscript correlation_gencode.r /Users/Manoj/Desktop/genes_matrix_csv/ /Users/Manoj/Desktop/genes_matrix_csv/out/
 
+# USAGE: used specifically for calculating correlation coefficients and plots between gencode internal and external
+
 arg = commandArgs(trailingOnly = TRUE)
-setwd(arg[1])
+in_path = arg[1]
+out_path = arg[2]
+
+setwd(in_path)
 
 if (file.exists(".RData")) {
 	load(".RData")
@@ -22,9 +27,9 @@ for (i in 1:length(lines)){
 
 ### NE ###
 	# # create file names
-	#proc_plot<-paste(arg[2],paste0(lines[i],"_proc.pdf"),sep="/")
+	#proc_plot<-paste(out_path,paste0(lines[i],"_proc.pdf"),sep="/")
 
-	proc_plot <- file.path(arg[2],paste0(lines[i],"_proc.pdf"), sep = "/"))
+	proc_plot <- file.path(out_path,paste0(lines[i],"_proc.pdf"), sep = "/"))
 
 	pdf(file=proc_plot)
 
