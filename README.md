@@ -1,4 +1,4 @@
-##### Pipeline for RNAseq using TUXEDO protocols
+#### Pipeline for RNAseq using TUXEDO protocols
 
 ### **Scripts required in home directory:**
 ```
