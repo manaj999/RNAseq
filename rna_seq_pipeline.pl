@@ -85,7 +85,7 @@ Description:
 	Within the given output directory, this script will create subdirectories
 	that store the results of each component in the Tuxedo Suite. The output
 	directory will also contain a log file that broadly documents the progress
-	of the pipeline.
+	of the pipeline. More detailed logs can be found in each component's subdirectory.
 
 	If you wish to run cuffdiff you must use the pipeline.pl script after this 
 	pipeline has completed. For more information on using cuffdiff, enter

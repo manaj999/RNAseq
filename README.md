@@ -1,5 +1,5 @@
 Pipeline for RNAseq using TUXEDO protocols
-
+```
 Scripts required in home directory:
 
 rna_seq_pipeline.pl
@@ -14,8 +14,9 @@ submit_2.sh
 
 cn_hold.sh
 cummeRpipe.r
-
+```
 ----------------------------------------------------------------------------------
+```
 USAGE:
 	perl rna_seq_pipeline.pl -i <INPUT> -o <OUTPUT> -g <GENOME> -r <RUNID> <OPTIONS>
 
@@ -42,7 +43,7 @@ OPTIONS:
 							and "Annotation" folders are located in -g argument
 	--nodiscovery			Use to skip gene/transcript discovery and only quantify reference annotation
 	--pairedEnd 			Use for if sequencing reads are paired-end, as opposed to single-end
-
+```
 Description:
 	This script serves as the wrapper for the entire Tuxedo pipeline.
 	It has been written to optimize the processing of multiple FASTQ 
@@ -57,7 +58,7 @@ Description:
 	Within the given output directory, this script will create subdirectories
 	that store the results of each component in the Tuxedo Suite. The output
 	directory will also contain a log file that broadly documents the progress
-	of the pipeline.
+	of the pipeline. More detailed logs can be found in each component's subdirectory.
 
 	If you wish to run cuffdiff you must use the pipeline.pl script after this 
 	pipeline has completed. For more information on using cuffdiff, enter
