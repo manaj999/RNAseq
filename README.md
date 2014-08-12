@@ -1,6 +1,6 @@
-######Pipeline for RNAseq using TUXEDO protocols
+##### Pipeline for RNAseq using TUXEDO protocols
 
-####*Scripts required in home directory:*
+### **Scripts required in home directory:**
 ```
 rna_seq_pipeline.pl
 rna_seq_pipeline.sh
@@ -16,7 +16,7 @@ cn_hold.sh
 cummeRpipe.r
 ```
 ----------------------------------------------------------------------------------
-####**Description:**
+### **Description:**
 ```
 	This script serves as the wrapper for the entire Tuxedo pipeline.
 	It has been written to optimize the processing of multiple FASTQ 
@@ -38,7 +38,7 @@ cummeRpipe.r
 	"perl pipeline.pl --cd" at the commandline.
 ```
 ----------------------------------------------------------------------------------
-#### **USAGE**
+### **Usage:**
 ```
 **GENERAL:**
 	perl rna_seq_pipeline.pl -i <INPUT> -o <OUTPUT> -g <GENOME> -r <RUNID> <OPTIONS>
