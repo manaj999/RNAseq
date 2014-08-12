@@ -3,8 +3,41 @@ use strict;
 use warnings;
 use Getopt::Long;
 
+# perl run_pipeline.pl -i <INPUT> -o <OUTPUT> -g <GENOME> -p <PART> -r <RUNID> -m <MERGE> -n <NOVEL> -e <PAIRED> <OPTIONS>
 
+## THIS EXECUTES EACH COMPONENT OF THE TUXEDO PIPELINE FOR A SINGLE FASTQ FILE
 
+## Example run:
+	### perl pipeline.pl -i /home/kanagarajm/samples_fq/HSB103.DFC_R1.fq.gz -o /mnt/state_lab/share/Manoj/rna_seq_out/ -g u -p 1 -r 81214 -m y -n n -e /home/kanagarajm/samples_fq/HSB103.DFC_R2.fq.gz --cd
+
+## REQUIRED ARGUMENTS:
+	### -i : input ... Input directory varies depending upon step of pipeline
+		#### For part 1, input will be the FastQ file of the sample
+		#### For part 3, input will be the sample's directory in the th-out folder
+		#### For cuffdiff, input will be the sample's directory in the cq-out folder
+		#### For parts 2 and 4, $input does not matter
+	### -o : output ... Directory where all output files will be organized and saved
+		#### Remains constant for all components
+	### -g : genome build ... Genome build to be used. "u" for UCSC, "e" for Ensembl, "n" for NCBI, "g10" for Gencode v10, "g19" for Gencode v19, "m2" for Gencode m2. 
+		#### If alternative annotation is being used, then specify PATH of directory where "Sequence" and "Annotation" folders are located.
+	### -p : part ... part of the pipeline to be completed. 
+		#### 0 => Build transcriptome from specified annotation
+		#### 1 => Tophat and Cufflinks (optional)
+		#### 2 => Cuffmerge (optional) 
+		#### 3 => Cuffquant
+		#### 4 => Cuffnorm and CummeRbund
+	### -r : runID ... unique runID used to identify and organize outputs from a given run
+
+## OPTIONS:
+	### -merge: "y" indicates that cuffmerge step will occur, whereas "n" indicates that cuffmerge will be skipped
+	### -novel: "y" indicates that novel junctions will be found in TopHat, whereas "n" indicates that they will be skipped
+		#### "n" also results in cufflinks and cuffmerge being skipped
+	### -paired: Stores the file path to the paired FASTQ file for TopHat in Part 1 
+	
+	### --cm: cuffmerge; secondary check to confirm whether or not to run Cuffmerge. If its value is 0, then cuffmerge will be skipped
+	### --cd: cuffdiff; If its value is 0, then cuffdiff will be skipped
+		#### cuffdiff can only be executed using this script specifically, and is not compatible with the rna_seq_pipeline.pl wrapper script
+		#### This was designed to ensure the user is aware of the need to use cuffdiff, which significantly affects the runtime.
 
 # DECLARE COMPONENT SUBROUTINES
 sub run_tophat();
@@ -18,19 +51,19 @@ sub run_cuffdiff();
 my ( $input, $output, $genomeType, $part, $genome, $genes, $merged, $log, $cm, $cd, $runID, $assembly, $index, $transcriptome, $merge, $novel, $paired );
 
 GetOptions(	
-	'o=s' => \$output,
 	'i=s' => \$input,
+	'o=s' => \$output,
 	'g=s' => \$genomeType,
 	'p=i' => \$part,
-	'cm' => \$cm,
-	'cd' => \$cd,
 	'r=i' => \$runID,
 	'm=s' => \$merge,
 	'n=s' => \$novel,
-	'e=s' => \$paired
+	'e=s' => \$paired,
+	'cm' => \$cm,
+	'cd' => \$cd
 ) or die "Incorrect input and/or output path!\n";
 
-# Set variable paths
+# Prepare variable file paths
 if ($genomeType eq "u") {
 	$assembly = "UCSC/hg19";
 }
@@ -91,9 +124,6 @@ unless (-e $cb_output) { unless (mkdir $cb_output) { die "Unable to create $cb_o
 # DECLARE FILE VARIABLE
 ## The $file variable is used to specify the file that is to be run by 
 	## each of the component subroutines
-	### For part 1, input will be the FastQ file of the sample.
-	### For part 2, input will be the sample's directory in th-out
-	### For part 3 and cuffdiff, input will be the sample's directory in cl-out
 my $file = $input;
 
 
@@ -152,16 +182,10 @@ if ($cd){
 
 }
 
-
 close(LOG);
-
-
-
 
 ###### SUBROUTINES FOR EACH STEP IN THE PIPELINE ######
 sub run_tophat() {
-	# Example command for this subroutine
-	## perl run_tophat.pl -i /mnt/state_lab/proc/brainSpanRNAseq_align/HSB*.fq -o /mnt/speed/kanagarajm
 
 	# Editing file name to organize in appropriate output directory
 	my $newFilename = $file;
@@ -177,9 +201,6 @@ sub run_tophat() {
 
 	# Run tophat
 
-
-	my $cur = `pwd`;
-	print LOG $cur."\n";
 	if ($novel eq "y"){
 		if ($paired) {
 			`/mnt/state_lab/progs/tophat/bin/tophat -r 50 -p 8 -o $newFilename --library-type fr-unstranded --solexa1.3-quals --transcriptome-index=$index $transcriptome $file $paired`;
@@ -199,8 +220,6 @@ sub run_tophat() {
 		
 	}
 	
-	
-	
 	@time=localtime(time);
 	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," TopHat complete: $newFilename.\n";
 
@@ -209,8 +228,6 @@ sub run_tophat() {
 }
 
 sub run_cufflinks() {
-	# Example command for this subroutine
-	## perl run_cufflinks.pl -i /mnt/speed/kanagarajm/th-out/th-out_HSB* -o /mnt/speed/kanagarajm -g u
 
 	my $newFilename = $file;
 	$file = $file . "/accepted_hits.bam";
@@ -232,8 +249,6 @@ sub run_cufflinks() {
 }
 
 sub run_cuffmerge() {
-	# Example command for this subroutine
-	## perl run_cuffmerge.pl -o /mnt/speed/kanagarajm -g u
 
 	# Create assemblies.txt file after running all relevant samples through cufflinks, and prior to running cuffmerge
 	`ls $output/cl-out/cl-out_*_$runID/transcripts.gtf > $output/cm-out/assemblies.txt`;
@@ -256,8 +271,7 @@ sub run_cuffmerge() {
 }
 
 sub run_cuffquant() {
-	# Example command for this subroutine
-	## perl run_cuffquant.pl -i /mnt/speed/kanagarajm/th-out/th-out_HSB* -o /mnt/speed/kanagarajm -g u
+
 	if ( $merge eq "y" ) {
 		$merged = $cm_output . "cm-out_$runID/merged.gtf";
 	}
@@ -329,11 +343,10 @@ sub run_cuffnorm() {
 
 sub run_cummeRbund(){
 
-	# can make them pipe to new directory just for those runs if you really care to
 	@time=localtime(time);
 	print LOG "[",(1900+$time[5]),"-$time[4]-$time[3] $time[2]:$time[1]:$time[0]","]"," Generating cummeRbund summary graphs: $cb_output\n";
 
-	$cn_output =~ s/.$// if (substr($input, -1, 1) eq "/");
+	$cn_output =~ s/.$// if (substr($cn_output, -1, 1) eq "/");
 	`Rscript cummeRpipe.r $cn_output/cn-out_$runID/ $cb_output $runID`;
 
 	@time=localtime(time);

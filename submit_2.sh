@@ -20,7 +20,7 @@
 
 
 #defining SGE_INDEX and input files
-	## Locate directory with all fastQ files to be run through pipeline
+	## Locate directory with all th-out directories produced from Part 1 of the pipeline
 SAMPLE_DIR=$ARG1;
 SAMPLE_LIST=($SAMPLE_DIR/$ARG6);
 
