@@ -1,7 +1,12 @@
 #!/usr/bin/Rscript
 
 arg = commandArgs(trailingOnly = TRUE)
-setwd(arg[1])
+
+in_path = arg[1]
+out_path = arg[2]
+
+setwd(in_path)
+
 
 if (file.exists(".RData")) {
 	load(".RData")
@@ -21,7 +26,7 @@ for (i in 1:length(lines)){
 
 ### NE ###
 	# # create file names
-	ne_plot<-paste(arg[2],paste0(lines[i],"_ne.pdf"),sep="/")
+	ne_plot<-paste(out_path,paste0(lines[i],"_ne.pdf"),sep="/")
 	pdf(ne_plot)
 
 	# # create merged data frame
@@ -37,7 +42,7 @@ for (i in 1:length(lines)){
 	cat("\n")
 
 ### UN ###
-	un_plot<-paste(arg[2],paste0(lines[i],"_un.pdf"),sep="/")
+	un_plot<-paste(out_path,paste0(lines[i],"_un.pdf"),sep="/")
 	pdf(un_plot)
 
 	temp<-merge(subset(ucsc_uniq, select=c(lines[i])),subset(ncbi_uniq, select=c(lines[i])),by='row.names')
@@ -50,7 +55,7 @@ for (i in 1:length(lines)){
 	cat("\n")
 
 ### UE ###
-	ue_plot<-paste(arg[2],paste0(lines[i],"_ue.pdf"),sep="/")
+	ue_plot<-paste(out_path,paste0(lines[i],"_ue.pdf"),sep="/")
 	pdf(ue_plot)
 
 	temp<-merge(subset(ucsc_uniq, select=c(lines[i])),subset(ensembl_uniq, select=c(lines[i])),by='row.names')
@@ -63,7 +68,7 @@ for (i in 1:length(lines)){
 	cat("\n")
 
 ### EG ###
-	eg_plot<-paste(arg[2],paste0(lines[i],"_eg.pdf"),sep="/")
+	eg_plot<-paste(out_path,paste0(lines[i],"_eg.pdf"),sep="/")
 	pdf(eg_plot)
 
 	temp<-merge(subset(ensembl_uniq, select=c(lines[i])),subset(gencode_uniq, select=c(lines[i])),by='row.names')
@@ -76,7 +81,7 @@ for (i in 1:length(lines)){
 	cat("\n")
 
 ### UG ###
-	ug_plot<-paste(arg[2],paste0(lines[i],"_ug.pdf"),sep="/")
+	ug_plot<-paste(out_path,paste0(lines[i],"_ug.pdf"),sep="/")
 	pdf(ug_plot)
 
 	temp<-merge(subset(ucsc_uniq, select=c(lines[i])),subset(gencode_uniq, select=c(lines[i])),by='row.names')
@@ -89,7 +94,7 @@ for (i in 1:length(lines)){
 	cat("\n")
 
 ### NG ###
-	ng_plot<-paste(arg[2],paste0(lines[i],"_ng.pdf"),sep="/")
+	ng_plot<-paste(out_path,paste0(lines[i],"_ng.pdf"),sep="/")
 	pdf(ng_plot)
 
 	temp<-merge(subset(ncbi_uniq, select=c(lines[i])),subset(gencode_uniq, select=c(lines[i])),by='row.names')
