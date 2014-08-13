@@ -102,11 +102,14 @@ else {
 	print "\n\t\t\t>>>>>> ARGUMENTS LOADED <<<<<<\n\n";
 }
 
+my $novelPrint = "";
+$novelPrint = "--no-novel-juncs" if($overrideDisc);
+
 # Parameter check
 print <<ParamCheck;
 Before running this script, please review the current parameters for TopHat and the Cuffsuite
 
-TopHat:					-r 50 -p 8 --library-type fr-unstranded --solexa1.3-quals
+TopHat:					-r 50 -p 8 --library-type fr-unstranded --solexa1.3-quals $novelPrint
 
 Cufflinks:				-p 8 --library-type fr-unstranded --multi-read-correct --frag-bias-correct <GENOME>
 
