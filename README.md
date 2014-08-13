@@ -1,6 +1,6 @@
 #### **Pipeline for RNAseq using TUXEDO protocols**
 
-### **Scripts required in home directory:**
+### **Scripts required in workin directory:**
 ```
 rna_seq_pipeline.pl
 rna_seq_pipeline.sh

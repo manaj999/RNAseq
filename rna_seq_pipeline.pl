@@ -27,21 +27,22 @@ use Getopt::Long;
 	### --nodiscovery: use to skip gene/transcript discovery and only quantify reference annotation
 	### --pairedEnd: use for paired-end sequencing reads
 
-my ( $input, $output, $genomeType, $runID, $overrideCM, $altAnnotation, $overrideDisc, $paired );
+my ( $input, $output, $genomeType, $runID, $overrideCM, $altAnnotation, $overrideDisc, $paired, $help );
 
 GetOptions(	
 	'i=s' => \$input,
 	'o=s' => \$output,
 	'g=s' => \$genomeType,
 	'r=i' => \$runID,
-	
 	'nocuffmerge' => \$overrideCM,
 	'altAnnotation' => \$altAnnotation,
 	'nodiscovery' => \$overrideDisc,
-	'pairedEnd' => \$paired
+	'pairedEnd' => \$paired,
+	'help' => \$help,
+	'h' => \$help
 ) or die "Incorrect input and/or output path!\n";
 
-if (!$input or !$output or !$genomeType or !$runID){
+if (!$input or !$output or !$genomeType or !$runID or $help){
 	`clear`;
 	print <<HelpDocumentation;
 USAGE:
