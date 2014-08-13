@@ -27,6 +27,7 @@ use Getopt::Long;
 	### --nodiscovery: use to skip gene/transcript discovery and only quantify reference annotation
 	### --pairedEnd: use for paired-end sequencing reads
 
+
 my ( $input, $output, $genomeType, $runID, $overrideCM, $altAnnotation, $overrideDisc, $paired, $help );
 
 GetOptions(	
@@ -98,7 +99,33 @@ HelpDocumentation
 	exit;
 }
 else {
-	print "Arguments loaded.\n";
+	print "\n\t\t\t>>>>>> ARGUMENTS LOADED <<<<<<\n\n";
+}
+
+# Parameter check
+print <<ParamCheck;
+Before running this script, please review the current parameters for TopHat and the Cuffsuite
+
+TopHat:					-r 50 -p 8 --library-type fr-unstranded --solexa1.3-quals
+
+Cufflinks:				-p 8 --library-type fr-unstranded --multi-read-correct --frag-bias-correct <GENOME>
+
+Cuffmerge:				-p 8
+
+Cuffquant:				-p 8 --library-type fr-unstranded --multi-read-correct --frag-bias-correct <GENOME>
+
+Cuffnorm:				-p 8 --output-format cuffdiff
+
+Cuffdiff:				-p 8 -u -b <GENOME>
+
+Are these parameters suitable? [Y/N]
+
+ParamCheck
+
+my $paramCheck = <STDIN>;
+if ($paramCheck !~ /y/i) {
+	print "\nPlease edit 'run_pipeline.pl' manually to adjust the desired parameters.\n\n";
+	exit;
 }
 
 print "Beginning pipeline...\n";
