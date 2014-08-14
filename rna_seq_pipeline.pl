@@ -51,7 +51,7 @@ USAGE:
 	perl rna_seq_pipeline.pl -i <INPUT> -o <OUTPUT> -g <GENOME> -r <RUNID> <OPTIONS>
 
 EXAMPLE RUN:
-	perl rna_seq_pipeline.pl -i /home/kanagarajm/samples_fq/ -o /mnt/state_lab/share/Manoj/rna_seq_out/ -g u -r 81214 --pairedEnd
+	perl rna_seq_pipeline.pl -i /home/kanagarajm/samples_fq/ -o /mnt/state_lab/share/Manoj/rna_seq_out/ -g u -r 81214 -n 1 --pairedEnd
 
 REQUIRED ARGUMENTS:
 	-i (input)				Path to directory containing all fastq files to be run through pipeline
@@ -103,7 +103,7 @@ REQUIRED ARGUMENTS:
 								containing necessary files for building transcriptome here instead
 
 	-r (runID)				Unique runID used to identify and organize outputs from a given run
-	
+
 	-n (# replicates)		Number of replicate reads for each sample
 
 OPTIONS:
@@ -160,10 +160,10 @@ else {
 
 # Create submit shell scripts based on numbe
 if ($paired){
-	`perl repl-script-paired.pl submit-paired_1.sh $num_repl`;
+	`perl repl-script-paired.pl submit_paired_1.sh $num_repl`;
 }
 else {
-	`perl repl-script.pl submit-1.sh $num_repl`;
+	`perl repl-script.pl submit_1.sh $num_repl`;
 }
 
 my $novelPrint = "";
@@ -195,6 +195,22 @@ if ($paramCheck !~ /y/i) {
 	exit;
 }
 
+# Check file format
+print <<ParamCheck;
+Each FASTQ file should include a replicate tag and a paired-end tag.
+
+Please see the help documentation for more information.
+
+Are your FASTQ input files properly formatted? [Y/N]
+
+ParamCheck
+
+my $paramCheck = <STDIN>;
+if ($paramCheck !~ /y/i) {
+	print "\nPlease edit the help documentation for more information on correct format.\n\n";
+	exit;
+}
+
 print "Beginning pipeline...\n";
 
 # Input checks
@@ -219,7 +235,7 @@ $arguments = $arguments . " --altAnnotation" if($altAnnotation);
 $arguments = $arguments . " --nodiscovery" if($overrideDisc);
 $arguments = $arguments . " --pairedEnd" if($paired);
 
-print "Ready for submission to SGE.\n";
+print "Submitting job to SGE...\n";
 
 # Call shell script to begin automated pipeline
 `sh rna_seq_pipeline.sh $arguments`;
