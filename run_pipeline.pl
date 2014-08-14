@@ -189,9 +189,16 @@ sub run_tophat() {
 
 	# Editing file name to organize in appropriate output directory
 	my $newFilename = $file;
+
+	# parsing step here
+	# array with all file names (replicates)
+	#can use regex and just get the first one for the newFilename**
+	# can pass concatenated variable straight to tophat, no need for a condition
+
 	$newFilename =~ s#\.fq##;
 	$newFilename =~ s#\.gz##;
 	$newFilename =~ s#^.*/##;
+	$newFilename =~ s#_N.*##;
 	$newFilename =~ s#_R1## if ($paired);
 
 	@time=localtime(time);

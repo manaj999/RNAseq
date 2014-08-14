@@ -28,13 +28,14 @@ use Getopt::Long;
 	### --pairedEnd: use for paired-end sequencing reads
 
 
-my ( $input, $output, $genomeType, $runID, $overrideCM, $altAnnotation, $overrideDisc, $paired, $help );
+my ( $input, $output, $genomeType, $runID, $overrideCM, $altAnnotation, $overrideDisc, $paired, $help, $num_repl );
 
 GetOptions(	
 	'i=s' => \$input,
 	'o=s' => \$output,
 	'g=s' => \$genomeType,
 	'r=i' => \$runID,
+	'n=i' => \$num_repl,
 	'nocuffmerge' => \$overrideCM,
 	'altAnnotation' => \$altAnnotation,
 	'nodiscovery' => \$overrideDisc,
@@ -43,7 +44,7 @@ GetOptions(
 	'h' => \$help
 ) or die "Incorrect input and/or output path!\n";
 
-if (!$input or !$output or !$genomeType or !$runID or $help){
+if (!$input or !$output or !$genomeType or !$runID or !$num_repl or $help){
 	`clear`;
 	print <<HelpDocumentation;
 USAGE:
@@ -53,9 +54,45 @@ EXAMPLE RUN:
 	perl rna_seq_pipeline.pl -i /home/kanagarajm/samples_fq/ -o /mnt/state_lab/share/Manoj/rna_seq_out/ -g u -r 81214 --pairedEnd
 
 REQUIRED ARGUMENTS:
-	-i (input)				Directory containing all fastq files to be run through pipeline
-	-o (output)				Directory where all output files will be organized and saved
-	-g (genome build)			Genome build to be used 
+	-i (input)				Path to directory containing all fastq files to be run through pipeline
+								Input fastq files within directory should be gzipped and have tags to specify 
+								the number of read replicates (_N*) and associated paired-ends (_R1 and _R2).
+								Example (two paired-end samples with 3 replicates each):
+
+									/home/kanagarajm/samples_fq/HSB113.DFC_N1_R1
+									/home/kanagarajm/samples_fq/HSB113.DFC_N2_R1
+									/home/kanagarajm/samples_fq/HSB113.DFC_N3_R1
+									/home/kanagarajm/samples_fq/HSB113.DFC_N1_R2
+									/home/kanagarajm/samples_fq/HSB113.DFC_N2_R2
+									/home/kanagarajm/samples_fq/HSB113.DFC_N3_R2
+
+									/home/kanagarajm/samples_fq/HSB103.DFC_N1_R1
+									/home/kanagarajm/samples_fq/HSB103.DFC_N2_R1
+									/home/kanagarajm/samples_fq/HSB103.DFC_N3_R1
+									/home/kanagarajm/samples_fq/HSB103.DFC_N1_R2
+									/home/kanagarajm/samples_fq/HSB103.DFC_N2_R2
+									/home/kanagarajm/samples_fq/HSB103.DFC_N3_R2
+
+								Even if the sample is not paired-end or have replicates, it should still be
+								annotated in this manner.
+
+	-o (output)				Path to directory where all output files will be organized and saved
+								Within the given directory, the following subdirectories and files will be created:
+										
+										th-out (TopHat)
+										cl-out (Cufflinks)
+										cm-out (Cuffmerge)
+										cq-out (Cuffquant)
+										cn-out (Cuffnorm)
+										cb-out (CummeRbund)
+										cd-out (Cuffdiff)
+										log_[RUN_ID].txt (Log file)
+
+								The results for each component of the Tuxedo pipeline 
+								can be found within each respective directory.
+
+
+	-g (genome build)		Genome build to be used 
 							"u" for UCSC
 							"e" for Ensembl
 							"n" for NCBI
@@ -64,7 +101,10 @@ REQUIRED ARGUMENTS:
 							"m2" for Gencode m2
 								If using --altAnnotation option, then specify PATH of directory 
 								containing necessary files for building transcriptome here instead
+
 	-r (runID)				Unique runID used to identify and organize outputs from a given run
+	
+	-n (# replicates)		Number of replicate reads for each sample
 
 OPTIONS:
 	--nocuffmerge			Use to skip running cuffmerge
@@ -72,6 +112,22 @@ OPTIONS:
 							and "Annotation" folders are located in -g argument
 	--nodiscovery			Use to skip gene/transcript discovery and only quantify reference annotation
 	--pairedEnd 			Use for if sequencing reads are paired-end, as opposed to single-end
+
+Scripts required in working directory:
+		rna_seq_pipeline.pl
+		rna_seq_pipeline.sh
+
+		pipeline.pl
+		run_pipeline.pl
+
+		repl-script.pl
+		repl-script-paired.pl
+		submit_1.sh
+		submit-paired_1.sh
+		submit_2.sh
+
+		cn_hold.sh
+		cummeRpipe.r
 
 Description:
 	This script serves as the wrapper for the entire Tuxedo pipeline.
@@ -102,6 +158,14 @@ else {
 	print "\n\t\t\t>>>>>> ARGUMENTS LOADED <<<<<<\n\n";
 }
 
+# Create submit shell scripts based on numbe
+if ($paired){
+	`perl repl-script-paired.pl submit-paired_1.sh $num_repl`;
+}
+else {
+	`perl repl-script.pl submit-1.sh $num_repl`;
+}
+
 my $novelPrint = "";
 $novelPrint = "--no-novel-juncs" if($overrideDisc);
 
@@ -119,7 +183,7 @@ Cuffquant:				-p 8 --library-type fr-unstranded --multi-read-correct --frag-bias
 
 Cuffnorm:				-p 8 --output-format cuffdiff
 
-Cuffdiff:				-p 8 -u -b <GENOME>
+Cuffdiff:				-p 8 --multi-read-correct --frag-bias-correct <GENOME>
 
 Are these parameters suitable? [Y/N]
 
