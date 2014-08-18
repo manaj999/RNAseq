@@ -1,23 +1,5 @@
 #### **Pipeline for RNAseq using TUXEDO protocols**
 
-### **Scripts required in working directory:**
-```
-rna_seq_pipeline.pl
-rna_seq_pipeline.sh
-
-pipeline.pl
-run_pipeline.pl
-
-repl-script.pl
-repl-script-paired.pl
-submit_1.sh
-submit-paired_1.sh
-submit_2.sh
-
-cn_hold.sh
-cummeRpipe.r
-```
-----------------------------------------------------------------------------------
 ### **Description:**
 ```
 	This script serves as the wrapper for the entire Tuxedo pipeline.
@@ -38,6 +20,25 @@ cummeRpipe.r
 	If you wish to run cuffdiff you must use the pipeline.pl script after this 
 	pipeline has completed. For more information on using cuffdiff, enter
 	"perl pipeline.pl --cd" at the commandline.
+```
+----------------------------------------------------------------------------------
+
+### **Scripts required in working directory:**
+```
+rna_seq_pipeline.pl
+rna_seq_pipeline.sh
+
+pipeline.pl
+run_pipeline.pl
+
+repl-script.pl
+repl-script-paired.pl
+submit_1.sh
+submit-paired_1.sh
+submit_2.sh
+
+cn_hold.sh
+cummeRpipe.r
 ```
 ----------------------------------------------------------------------------------
 ### **Usage:**
