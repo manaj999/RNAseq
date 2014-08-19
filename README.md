@@ -21,6 +21,12 @@
 	pipeline has completed. For more information on using cuffdiff, enter
 	"perl pipeline.pl --cd" at the commandline.
 ```
+![slide 3](https://github.com/manaj999/RNAseq/blob/master/slides/3.png)
+![slide 4](https://github.com/manaj999/RNAseq/blob/master/slides/4.png)
+![slide 4.2](https://github.com/manaj999/RNAseq/blob/master/slides/4.2.png)
+![slide 10](https://github.com/manaj999/RNAseq/blob/master/slides/10.png)
+![slide 10.2](https://github.com/manaj999/RNAseq/blob/master/slides/10.2.png)
+![slide 10.3](https://github.com/manaj999/RNAseq/blob/master/slides/10.3.png)
 ----------------------------------------------------------------------------------
 
 ### **Scripts required in working directory:**
